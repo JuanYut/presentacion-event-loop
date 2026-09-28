@@ -5,6 +5,8 @@
      1. Constantes de duración y easing (DUR, EASE)
      2. Ajuste del escenario 1920x1080 a la ventana
      3. Controles de teclado: configurarControles(tl)
+        3b. Puente con el deck (postMessage)
+        3c. Control con mouse dentro del deck (órdenes de la barra, clics)
      4. Utilidades de escena (apilar, desapilar, encolar, imprimir...)
 
    Requiere que GSAP ya esté cargado (window.gsap).
@@ -98,6 +100,11 @@ function configurarControles(tl, infinita = true) {
     if (destino !== undefined) tl.pause(destino);
   }
 
+  if (dentroDelDeck) {
+    conectarControlConDeck(tl, saltarLabel, tiemposLabels);
+    reenviarClicsAlDeck();
+  }
+
   document.addEventListener('keydown', (evento) => {
     switch (evento.code) {
       case 'Space':
@@ -131,11 +138,12 @@ function configurarControles(tl, infinita = true) {
 /* ---------- 3b. Puente con el deck ----------
    Comunicación por postMessage entre la animación (iframe) y el deck (padre).
 
-     animación → deck : 'siguiente' / 'anterior' (teclas que llegaron al iframe)
+     animación → deck : 'siguiente' / 'anterior' (teclas o clics en el iframe)
+                        'rueda' + delta (la rueda del mouse sobre el iframe)
      deck → animación : 'activar'   (la slide entra: reiniciar desde cero)
                         'desactivar' (la slide sale: pausar para no gastar CPU) */
-function avisarAlDeck(accion) {
-  window.parent.postMessage({ origen: 'animacion', accion }, '*');
+function avisarAlDeck(accion, delta) {
+  window.parent.postMessage({ origen: 'animacion', accion, delta }, '*');
 }
 
 function escucharAlDeck() {
@@ -149,9 +157,89 @@ function escucharAlDeck() {
   });
 }
 
+/* ---------- 3c. Control con mouse dentro del deck ----------
+   En la charla puede que solo haya un mouse, sin teclado. La barra de
+   control (reiniciar, paso a paso, play/pausa) la dibuja el deck DEBAJO del
+   iframe, para que no tape la animación. Aquí solo se atiende:
+
+     deck → animación : 'reiniciar', 'paso-anterior', 'paso-siguiente',
+                        'alternar' (órdenes de los botones de la barra)
+     animación → deck : 'estado' + { pausada, paso, total } cuando cambia,
+                        para que la barra muestre play/pausa y el paso
+                        'mouse' (el mouse se movió encima: mostrar la barra)
+                        'siguiente' / 'anterior' / 'rueda' (clics y rueda) */
+function conectarControlConDeck(tl, saltarLabel, tiemposLabels) {
+  window.addEventListener('message', (evento) => {
+    if (!evento.data || evento.data.origen !== 'deck') return;
+    const accion = evento.data.accion;
+    if (accion === 'reiniciar') tl.restart();
+    if (accion === 'paso-anterior') saltarLabel(-1);
+    if (accion === 'paso-siguiente') saltarLabel(+1);
+    if (accion === 'alternar') {
+      if (tl.progress() >= 1) tl.restart();
+      else tl.paused(!tl.paused());
+    }
+    // Al entrar en la slide se reenvía aunque no haya cambiado, porque la
+    // barra es una sola para todas las slides.
+    if (accion === 'activar') ultimo = '';
+    avisarEstado();
+  });
+
+  // Mientras la animación corre, el paso cambia solo: se comprueba en cada
+  // frame de GSAP. Pero con la timeline en pausa GSAP deja de emitir frames,
+  // por eso además se avisa justo después de cada orden del deck.
+  let ultimo = '';
+  gsap.ticker.add(avisarEstado);
+  function avisarEstado() {
+    const tiempos = tiemposLabels();
+    const paso = tiempos.filter((t) => t <= tl.time() + 0.01).length;
+    const estado = `${tl.paused()}|${paso}|${tiempos.length}`;
+    if (estado === ultimo) return;
+    ultimo = estado;
+    window.parent.postMessage({
+      origen: 'animacion',
+      accion: 'estado',
+      pausada: tl.paused(),
+      paso,
+      total: tiempos.length,
+    }, '*');
+  }
+
+  // El deck no ve el mouse cuando está sobre el iframe: se le avisa, como
+  // mucho cada 200 ms, para que muestre la barra y las flechas.
+  let ultimoAviso = 0;
+  document.addEventListener('mousemove', () => {
+    const ahora = performance.now();
+    if (ahora - ultimoAviso < 200) return;
+    ultimoAviso = ahora;
+    avisarAlDeck('mouse');
+  });
+}
+
+// El iframe se traga los clics: sin esto, hacer clic sobre la animación no
+// cambiaría de slide y el presentador tendría que apuntar fuera de ella.
+function reenviarClicsAlDeck() {
+  // Navegando a clics, un doble clic rápido seleccionaría texto de la escena
+  document.body.style.userSelect = 'none';
+  document.addEventListener('click', (evento) => {
+    if (evento.button !== 0) return;
+    avisarAlDeck('siguiente');
+  });
+  document.addEventListener('contextmenu', (evento) => {
+    evento.preventDefault();
+    avisarAlDeck('anterior');
+  });
+  // La rueda se manda cruda: el deck decide cuándo cuenta como un cambio de
+  // slide, así el ritmo es el mismo dentro y fuera de la animación.
+  document.addEventListener('wheel', (evento) => {
+    evento.preventDefault();
+    avisarAlDeck('rueda', evento.deltaY);
+  }, { passive: false });
+}
+
 /* ---------- 4b. Navegación entre animaciones ----------
    configurarNavegacion() agrega botones "Anterior" y "Siguiente" para navegar
-   entre las 10 animaciones de la presentación Event Loop. */
+   entre las animaciones de la presentación Event Loop. */
 function configurarNavegacion() {
   // Dentro del deck navega el deck: estos botones sobrarían en pantalla.
   if (dentroDelDeck) return;
@@ -166,7 +254,9 @@ function configurarNavegacion() {
     '07-web-apis-categorias.html',
     '08-macrotask-queue.html',
     '09-microtask-queue.html',
-    '10-ejemplo-settimeout.html'
+    '10-ejemplo-settimeout.html',
+    '11-ejemplo-promise.html',
+    '12-ejemplo-promesas-encadenadas.html'
   ];
 
   const url = new URL(window.location);
@@ -188,9 +278,9 @@ function configurarNavegacion() {
     html += `<a href="${archivos[numeroAnterior - 1]}" class="animacion-nav__boton animacion-nav__anterior">← Anterior</a>`;
   }
 
-  html += `<span class="animacion-nav__numero">${String(numeroActual).padStart(2, '0')}/10</span>`;
+  html += `<span class="animacion-nav__numero">${String(numeroActual).padStart(2, '0')}/${archivos.length}</span>`;
 
-  if (numeroSiguiente <= 10) {
+  if (numeroSiguiente <= archivos.length) {
     html += `<a href="${archivos[numeroSiguiente - 1]}" class="animacion-nav__boton animacion-nav__siguiente">Siguiente →</a>`;
   }
 

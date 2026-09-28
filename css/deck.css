@@ -5,31 +5,41 @@
    Las animaciones traen sus propios estilos en shared/styles.css: este
    archivo NO los toca, solo viste las slides que las contienen.
 
+   Todas las medidas están en píxeles sobre el lienzo de 1920x1080 y salen de
+   los diseños de Juan (carpeta images/). Como deck.js escala el lienzo entero,
+   medir en píxeles fijos es lo que garantiza que se vea igual que el diseño.
+
    Secciones:
-     1. Variables (paleta de la presentación)
+     1. Variables (paleta y tipografía)
      2. Escenario 1920x1080 escalable
-     3. Slide: rejilla base y transición
-     4. Tipografía de las slides
-     5. Contenedor de animaciones (iframe)
-     6. Barra inferior: progreso, contador y botones
-     7. Ayuda de teclado
+     3. Slide base y variantes de color
+     4. Tipos de slide (portada, frase, partida, comparación, actores...)
+     5. Código dentro de las slides
+     6. Contenedor de animaciones (iframe)
+     7. Barra inferior: progreso, contador y botones
+     8. Ayuda de teclado
+     9. Barra de control de las animaciones
    ============================================================ */
 
 /* ---------- 1. Variables ---------- */
 :root {
-  /* La identidad de la presentación: amarillo de fondo, tinta casi negra.
-     Son los mismos valores que usan las animaciones en .stage--slide,
-     ahí invertidos para que el cuadrado contraste sobre la slide. */
+  /* La identidad de la presentación: amarillo y tinta casi negra. Son los
+     mismos valores que usan las animaciones en .stage--slide. */
   --amarillo: #FFEA00;
   --tinta: #1E1E1E;
-  --tinta-suave: rgba(30, 30, 30, 0.62);
-  --tinta-tenue: rgba(30, 30, 30, 0.16);
 
-  --fuente-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-ui: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fuente-codigo: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
 
-  /* Márgenes internos de una slide (sobre el lienzo de 1920x1080) */
-  --margen-slide: 96px;
+  /* Juan diseña con letras juntas para que se vea más urbano. Medido sobre
+     las imágenes del diseño: los títulos grandes van a -8% y el texto
+     corrido algo más suelto. Estos dos valores reproducen el ancho de todos
+     los textos de los diseños. */
+  --tracking: -0.035em;
+  --tracking-titulo: -0.085em;
+
+  /* Lado de las animaciones cuadradas cuando van junto al texto */
+  --lado-animacion: 796px;
 }
 
 /* ---------- 2. Escenario ---------- */
@@ -38,8 +48,7 @@
 html, body {
   margin: 0;
   height: 100%;
-  background: var(--tinta);   /* lo que queda fuera del 16:9 */
-  color: var(--tinta);
+  background: #000;   /* lo que queda fuera del 16:9 */
   font-family: var(--fuente-ui);
   overflow: hidden;
 }
@@ -56,19 +65,16 @@ html, body {
   transform: translate(-50%, -50%) scale(var(--escala, 1));
   transform-origin: center center;
   overflow: hidden;
+  /* Se navega a clics: sin esto un doble clic rápido selecciona texto */
+  user-select: none;
 }
 
-/* ---------- 3. Slide ---------- */
+/* ---------- 3. Slide base ---------- */
 .slide {
   position: absolute;
   inset: 0;
   background: var(--amarillo);
-  padding: var(--margen-slide);
-
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 40px;
-  align-content: start;
+  color: var(--tinta);
 
   /* Todas las slides viven en el DOM; solo la activa es visible. Así las
      animaciones ya cargadas no se reinician al volver atrás. */
@@ -81,148 +87,401 @@ html, body {
   visibility: visible;
 }
 
-/* Slide de portada: todo centrado, sin rejilla de dos filas */
-.slide--portada {
-  display: grid;
-  grid-template-rows: none;
-  place-content: center;
-  text-align: center;
-  gap: 32px;
+/* letter-spacing en em se hereda ya convertido a píxeles, así que un título
+   de 360px le pasaría su espaciado a un texto de 36px. Declararlo en cada
+   elemento hace que cada uno lo calcule con su propio tamaño de letra. */
+.slide,
+.slide * { letter-spacing: var(--tracking); }
+
+/* DM Sans es variable también en tamaño óptico: por defecto el navegador usa
+   su versión "display" en los títulos grandes, que ya viene más apretada, y
+   con el tracking encima las letras se pegan. Se fija el tamaño óptico de
+   texto normal, que es el que coincide con el diseño. */
+.slide { font-optical-sizing: none; }
+
+.slide--portada h1,
+.slide--portada h1 *,
+.frase,
+.seccion,
+.seccion * { letter-spacing: var(--tracking-titulo); }
+
+.slide h1,
+.slide h2,
+.slide p,
+.slide ul { margin: 0; }
+
+.slide strong { font-weight: 700; }
+
+/* Pasos: elementos que aparecen de uno en uno al avanzar (ver deck.js, 3b).
+   Se esconden con opacidad y no con display para que no ocupen otro sitio:
+   así la slide no se reacomoda cada vez que aparece un bullet. */
+.aparece {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.aparece.visible {
+  opacity: 1;
+  transform: none;
 }
 
-/* Slide cuyo contenido es solo la animación, a sangre (para la 16:9 grande) */
-.slide--lienzo {
-  padding: 48px;
-  grid-template-rows: 1fr;
-}
-
-/* ---------- 4. Tipografía ---------- */
-.slide__titulo {
-  margin: 0;
-  font-size: 92px;
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-}
-
-.slide--portada .slide__titulo { font-size: 132px; }
-
-.slide__subtitulo {
-  margin: 0;
-  font-size: 40px;
-  font-weight: 400;
-  line-height: 1.3;
-  color: var(--tinta-suave);
-}
-
-/* Etiqueta pequeña encima del título (tema de la sección) */
-.slide__kicker {
-  margin: 0 0 20px;
-  font-family: var(--fuente-codigo);
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-
-/* Lista de puntos: grande, pensada para leerse de lejos */
-.slide__lista {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 28px;
-  align-content: center;
-  font-size: 44px;
-  line-height: 1.35;
-}
-.slide__lista li {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 20px;
-  align-items: baseline;
-}
-/* Viñeta cuadrada, del mismo lenguaje visual que los bloques de las animaciones */
-.slide__lista li::before {
-  content: '';
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: var(--tinta);
-  transform: translateY(-4px);
-}
-
-.slide__lista code,
-.slide__subtitulo code,
-.slide__titulo code {
-  font-family: var(--fuente-codigo);
-  font-size: 0.88em;
-  padding: 0.08em 0.3em;
-  border-radius: 8px;
+/* Slides negras con letra amarilla (portada, separadores de sección) */
+.slide--oscura {
   background: var(--tinta);
   color: var(--amarillo);
 }
 
-/* Fila superior de una slide con título a la izquierda y nota a la derecha */
-.slide__encabezado {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 48px;
+/* Contenido centrado en la slide, en ambos ejes */
+.slide--centrada {
+  display: grid;
+  place-content: center;
+  text-align: center;
 }
 
-/* ---------- 5. Animaciones embebidas ---------- */
-/* El iframe carga la animación tal cual: controls.js dentro de ella se encarga
-   de escalar su propio escenario al tamaño que le demos aquí. Por eso basta
-   con respetar la proporción correcta (1:1 o 16:9) y no se deforma nada. */
-.animacion {
-  justify-self: center;
-  align-self: center;
-  width: auto;
-  height: 100%;
-  aspect-ratio: 1 / 1;          /* animaciones cuadradas (1080x1080) */
+/* ---------- 4. Tipos de slide ---------- */
 
+/* 4a. Portada: ponente arriba, título enorme debajo, todo a la izquierda */
+.slide--portada {
+  padding: 168px 84px 0;
+}
+.ponente {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+.ponente__foto {
+  width: 179px;
+  height: 179px;
+  border-radius: 24px;
+  background: #fff;
+  object-fit: cover;
+}
+.ponente__nombre {
+  font-size: 62px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.ponente__cargo {
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+.portada__titulo {
+  margin-top: 59px !important;
+  font-weight: 700;
+  /* El título ocupa casi todo el ancho: no debe partirse nunca */
+  white-space: nowrap;
+}
+.portada__antetitulo {
+  display: block;
+  font-size: 155px;
+  line-height: 1;
+  margin-left: -12px;
+}
+.portada__tema {
+  display: block;
+  font-size: 380px;
+  line-height: 0.9;
+  margin-top: -38px;
+  /* Las letras arrancan un poco adentro de su caja, más cuanto más grandes:
+     se compensa para que ambas líneas queden alineadas con la foto. */
+  margin-left: -29px;
+}
+
+/* 4b. Frase grande: una pregunta o comentario al público */
+.frase {
+  font-size: 214px;
+  font-weight: 700;
+  line-height: 1.09;
+}
+.frase--mediana {
+  font-size: 160px;
+  line-height: 1.02;
+}
+/* Alineada a la izquierda pero con el bloque centrado en la slide */
+.slide--centrada .frase--izquierda { text-align: left; }
+
+/* 4c. Separador de sección: "Sobre JavaScript", "ACTORES" */
+.seccion {
+  font-weight: 700;
+  line-height: 0.95;
+}
+.seccion__antetitulo {
+  display: block;
+  font-size: 206px;
+}
+.seccion__titulo {
+  display: block;
+  font-size: 320px;
+  line-height: 0.85;
+}
+.seccion__titulo--ejemplos {
+  font-size: 302px;
+  letter-spacing: -0.067em !important;
+}
+.seccion__antetitulo--cierre { font-size: 202px; }
+.seccion__titulo--enorme {
+  font-size: 298px;
+  letter-spacing: -0.06em !important;
+}
+
+/* 4d. Texto corrido: párrafos con palabras clave en negrita */
+.slide--texto {
+  display: grid;
+  align-content: center;
+  padding-left: 261px;
+}
+.parrafos {
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.72;
+}
+/* Una línea en blanco entre párrafos, como en el diseño */
+.parrafos p + p { margin-top: 1.72em; }
+
+/* Los mismos párrafos en forma de bullets (slide 4): mismo tamaño que el
+   diseño original, con aire entre puntos para que cada uno se lea solo
+   cuando aparece. */
+.puntos {
+  margin: 0;
+  max-width: 1400px;
+  padding-left: 1.1em;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.puntos li + li { margin-top: 0.75em; }
+.puntos li::marker { font-size: 0.9em; }
+
+/* Cierre de la charla ("En resumen" y "¿Por qué importa?"): título grande
+   encima de los mismos .puntos de la slide 4. Se dejó en dos slides porque
+   las siete ideas juntas no cabían sin achicar la letra. */
+.resumen__titulo {
+  margin-bottom: 40px !important;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+/* "¿Te ha pasado?": cada bullet es un síntoma y, debajo, su causa */
+.puntos__causa {
+  display: block;
+  margin-top: 4px;
+  font-size: 32px;
+  line-height: 1.35;
+  opacity: 0.72;
+}
+.puntos__remate {
+  margin-top: 48px !important;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Frase de remate bajo una .frase, en las slides centradas */
+.remate {
+  max-width: 1400px;
+  margin: 48px auto 0 !important;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+/* 4e. Partida: texto a la izquierda, animación a la derecha */
+.slide--partida {
+  display: grid;
+  grid-template-columns: 500px var(--lado-animacion);
+  column-gap: 190px;
+  justify-content: center;
+  align-items: center;
+}
+/* Variante para texto largo (listas): columna de texto más ancha */
+.slide--partida-ancha {
+  grid-template-columns: 930px var(--lado-animacion);
+  column-gap: 55px;
+}
+/* Texto corto alineado a la derecha, pegado a la animación */
+.slide--partida-media {
+  grid-template-columns: 540px var(--lado-animacion);
+  column-gap: 60px;
+}
+/* Colas de tareas: bloque de texto largo con su lista de ejemplos */
+.slide--partida-cola {
+  grid-template-columns: 757px var(--lado-animacion);
+  column-gap: 60px;
+}
+
+.texto {
+  font-size: 72px;
+  font-weight: 400;
+  line-height: 1.23;
+}
+.nota {
+  margin-top: 56px !important;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.22;
+}
+
+.lista {
+  font-size: 50px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+.lista > p { font-size: 53px; }
+.lista ul {
+  padding-left: 85px;
+}
+
+.encabezado-lateral {
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.27;
+  text-align: right;
+}
+
+/* Bloque de las colas: alias, título, puntos clave y ejemplos de código */
+.cola {
+  font-weight: 400;
+}
+.cola__alias {
+  font-size: 36px;
+  line-height: 1.2;
+}
+.cola__titulo {
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.cola ul {
+  font-size: 70px;
+  line-height: 1.2;
+  padding-left: 117px;
+}
+.cola__ejemplos {
+  margin-top: 40px !important;
+  font-size: 36px;
+  line-height: 1.3;
+}
+.cola ul.cola__codigo {
+  font-size: 36.5px;
+  line-height: 1.3;
+  padding-left: 58px;
+}
+
+/* 4f. Comparación: dos columnas de texto, cada una con su ejemplo de código.
+   Es una rejilla de dos filas para que los bloques de código queden a la
+   misma altura aunque los textos tengan distinto número de líneas. */
+.slide--comparacion {
+  display: grid;
+  grid-template-columns: 720px 720px;
+  grid-template-rows: auto auto;
+  grid-auto-flow: column;
+  column-gap: 176px;
+  row-gap: 50px;
+  align-content: center;
+  padding-left: 129px;
+}
+
+/* 4g. Actores: la rejilla de 2x2 con los protagonistas del Event Loop.
+   Se repite a lo largo de la charla resaltando el actor del que se va a
+   hablar (.actor--activo). */
+.actores {
+  display: grid;
+  grid-template-columns: 628px 628px;
+  grid-auto-rows: 263px;
+  gap: 100px 97px;
+}
+.actor {
+  display: grid;
+  place-items: center;
+  border: 6px solid var(--amarillo);
+  border-radius: 20px;
+  font-size: 76px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+.actor--activo {
+  background: var(--amarillo);
+  color: var(--tinta);
+}
+
+/* ---------- 5. Código ---------- */
+/* Bloque oscuro con resaltado de sintaxis estilo editor */
+.codigo-slide {
+  justify-self: start;
+  align-self: start;
+  margin: 0;
+  padding: 18px 20px;
+  background: var(--tinta);
+  color: #d4d4d4;
+  font-family: var(--fuente-codigo);
+  font-size: 25px;
+  line-height: 1.62;
+  /* JetBrains Mono dibuja => como una flecha; en la charla se enseña a
+     escribirlo, así que se muestra tal cual se teclea */
+  font-variant-ligatures: none;
+}
+/* El código se lee mejor con su espaciado natural */
+.codigo-slide,
+.codigo-slide * { letter-spacing: 0; }
+
+.codigo-slide .fn  { color: #61afef; }   /* funciones y métodos */
+.codigo-slide .str { color: #98c379; }   /* strings */
+.codigo-slide .num { color: #56b6c2; }   /* números */
+.codigo-slide .kw  { color: #c678dd; }   /* palabras clave y => */
+.codigo-slide .cm  { color: #7f848e; }   /* comentarios */
+
+/* ---------- 6. Animaciones embebidas ---------- */
+/* El iframe carga la animación tal cual: controls.js dentro de ella escala su
+   propio escenario al tamaño que tenga el iframe. Se le da un tamaño fijo en
+   píxeles (no porcentajes) para que nunca crezca más que la slide. */
+.animacion {
+  display: block;
+  width: var(--lado-animacion);
+  height: var(--lado-animacion);
   border: 0;
   border-radius: 28px;
-  overflow: hidden;
   background: var(--tinta);
-  box-shadow: 0 24px 60px rgba(30, 30, 30, 0.22);
 }
 
-/* Animaciones en formato 16:9 (la del ejemplo de setTimeout) */
-.animacion--ancha {
-  aspect-ratio: 16 / 9;
-  width: 100%;
-  height: auto;
-  max-height: 100%;
-}
-
-/* Animación al lado del texto: dos columnas */
-.slide--partida .slide__cuerpo {
+/* Animaciones en formato 16:9 (la del ejemplo de setTimeout). Pegada arriba
+   y algo más chica que la slide para dejar sitio debajo a la barra de
+   control, que no debe tapar la animación. */
+.slide--lienzo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-  min-height: 0;
+  justify-items: center;
+  align-content: start;
+  padding-top: 40px;
 }
-.slide__cuerpo { min-height: 0; }
+.animacion--ancha {
+  width: 1600px;
+  height: 900px;
+}
 
-/* ---------- 6. Barra inferior ---------- */
-/* Discreta: tinta sobre amarillo, sin robar atención a la slide. */
+/* ---------- 7. Barra inferior ---------- */
+/* Discreta: tinta sobre amarillo, sin robar atención a la slide. En las
+   slides oscuras deck.js pone .deck--oscura y se invierte. */
+.deck {
+  --color-interfaz: var(--tinta);
+}
+.deck.deck--oscura {
+  --color-interfaz: var(--amarillo);
+}
+
 .barra {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   height: 6px;
-  background: var(--tinta-tenue);
   z-index: 5;
 }
 .barra__progreso {
   height: 100%;
   width: 0;
-  background: var(--tinta);
+  background: var(--color-interfaz);
+  opacity: 0.5;
   transition: width 0.35s ease;
 }
 
@@ -234,7 +493,8 @@ html, body {
   font-family: var(--fuente-codigo);
   font-size: 22px;
   font-weight: 500;
-  color: var(--tinta-suave);
+  color: var(--color-interfaz);
+  opacity: 0.4;
   user-select: none;
 }
 
@@ -259,23 +519,21 @@ html, body {
   place-items: center;
   font-size: 24px;
   font-family: var(--fuente-ui);
-  color: var(--tinta);
+  color: var(--color-interfaz);
   background: transparent;
-  border: 3px solid var(--tinta-tenue);
+  border: 3px solid currentColor;
   border-radius: 14px;
+  opacity: 0.5;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: opacity 0.2s ease;
 }
-.flechas button:hover {
-  border-color: var(--tinta);
-  background: rgba(30, 30, 30, 0.08);
-}
+.flechas button:hover { opacity: 1; }
 .flechas button:disabled {
-  opacity: 0.3;
+  opacity: 0.15;
   cursor: default;
 }
 
-/* ---------- 7. Ayuda de teclado ---------- */
+/* ---------- 8. Ayuda de teclado ---------- */
 .ayuda-deck {
   position: absolute;
   inset: 0;
@@ -291,6 +549,7 @@ html, body {
 }
 .ayuda-deck__tarjeta {
   background: var(--amarillo);
+  color: var(--tinta);
   border-radius: 28px;
   padding: 56px 64px;
 }
@@ -313,3 +572,75 @@ html, body {
   background: var(--tinta);
   color: var(--amarillo);
 }
+
+/* ---------- 9. Barra de control de las animaciones ----------
+   Una sola para todo el deck. deck.js la coloca centrada DEBAJO del iframe
+   de la slide actual (nunca encima, para no tapar la animación) y le pone
+   .disponible solo en las slides con animación. Aparece al mover el mouse,
+   como las flechas. Botones grandes porque se usan con el mouse en plena
+   charla. */
+.control-animacion {
+  position: absolute;
+  z-index: 6;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--tinta);
+  border: 2px solid rgba(255, 234, 0, 0.35);
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.control-animacion.disponible { display: flex; }
+.deck.raton-activo .control-animacion.disponible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.control-animacion button {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--amarillo);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.control-animacion button:hover { background: rgba(255, 234, 0, 0.15); }
+.control-animacion svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* El clic lo recibe siempre el botón, nunca el dibujo del icono */
+  pointer-events: none;
+}
+/* Play/pausa es la acción más usada: botón relleno para encontrarlo sin mirar */
+.control-animacion .control-animacion__principal {
+  color: var(--tinta);
+  background: var(--amarillo);
+}
+.control-animacion .control-animacion__principal:hover { background: #fff27a; }
+.control-animacion .icono-reproducir { display: none; }
+.control-animacion.pausada .icono-reproducir { display: block; }
+.control-animacion.pausada .icono-pausa { display: none; }
+
+.control-animacion__paso {
+  min-width: 56px;
+  padding-right: 6px;
+  font-family: var(--fuente-codigo);
+  font-size: 20px;
+  color: rgba(255, 234, 0, 0.7);
+  text-align: center;
+  letter-spacing: 0;
+}
+.control-animacion__paso:empty { display: none; }

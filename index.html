@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>El Event Loop de JavaScript · Presentación</title>
+  <title>El Motor Invisible de la Web: Event Loop</title>
   <link rel="stylesheet" href="vendor/fuentes/fuentes.css">
   <link rel="stylesheet" href="css/deck.css">
 </head>
@@ -15,6 +15,11 @@
   quitar o reordenar slides basta mover bloques aquí: deck.js las recoge con
   querySelectorAll y el contador y la barra de progreso se ajustan solos.
 
+  Tipos de slide (ver css/deck.css, sección 4): slide--portada, slide--centrada
+  (frases y separadores), slide--texto, slide--partida (texto + animación),
+  slide--comparacion y slide--lienzo. slide--oscura la pone negra con letra
+  amarilla; deck.js invierte también la barra y el contador en esas.
+
   Las animaciones se embeben con data-src (no src) para que deck.js las cargue
   solo cuando toca. Usa class="animacion" para las cuadradas (1080x1080) y
   class="animacion animacion--ancha" para las de 16:9.
@@ -23,129 +28,335 @@
 <div class="deck">
 
   <!-- ===== 1. Portada ===== -->
-  <section class="slide slide--portada activa">
-    <p class="slide__kicker">JavaScript · Asincronía</p>
-    <h1 class="slide__titulo">El Event Loop</h1>
-    <p class="slide__subtitulo">Cómo JavaScript hace varias cosas<br>con un solo hilo</p>
+  <section class="slide slide--oscura slide--portada activa">
+    <div class="ponente">
+      <img class="ponente__foto" src="img/yut-perfil.png" alt="Avatar de Juan Santillán">
+      <div>
+        <p class="ponente__nombre">Juan Santillán</p>
+        <p class="ponente__cargo">FullStack Developer / Cervecería de la Costa</p>
+      </div>
+    </div>
+    <h1 class="portada__titulo">
+      <span class="portada__antetitulo">El Motor Invisible de la Web:</span>
+      <span class="portada__tema">Event Loop</span>
+    </h1>
   </section>
 
-  <!-- ===== 2. JS es single-threaded ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">01</p>
-        <h2 class="slide__titulo">JavaScript es single-threaded</h2>
-      </div>
-    </header>
+  <!-- ===== 2. Rompehielos ===== -->
+  <section class="slide slide--centrada">
+    <p class="frase frase--izquierda">¿Event Loop?,<br>¿neta, wey?,<br>qué aburrido</p>
+  </section>
+
+  <!-- ===== 3. Sección: ¿Qué es el Event Loop? ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <h2 class="seccion">
+      <span class="seccion__antetitulo">¿Qué es el</span>
+      <span class="seccion__titulo">Event Loop?</span>
+    </h2>
+  </section>
+
+  <!-- ===== 4. Qué es el Event Loop y por qué importa ===== -->
+  <section class="slide slide--texto">
+    <ul class="puntos">
+      <li class="aparece"><strong>Qué es:</strong> un <strong>ciclo eterno</strong> que tiene <strong>JavaScript</strong>, siempre revisando si hay algo por hacer.</li>
+      <li class="aparece"><strong>Permite:</strong> que <strong>JavaScript</strong> no se congele mientras espera.</li>
+      <li class="aparece"><strong>JS</strong> hace una sola cosa a la vez.</li>
+      <li class="aparece"><strong>Pero cuando algo va a tardar, no se queda esperando:</strong> lo delega, sigue trabajando en lo demás, y lo retoma cuando ya está listo.</li>
+      <li class="aparece">Ese <strong>"retomarlo en el momento correcto"</strong> es el <strong>event loop.</strong></li>
+      <li class="aparece"><strong>Por qué importa:</strong> explica por qué <strong>setTimeout(fn, 0)</strong> no se ejecuta de inmediato, y por qué las <strong>Promises</strong> corren <strong>antes</strong> que los <strong>setTimeout.</strong></li>
+    </ul>
+  </section>
+
+  <!-- ===== 5. JS es single-threaded ===== -->
+  <section class="slide slide--partida">
+    <p class="texto"><strong>JS es single-threaded:</strong><br>Solo puede ejecutar una instrucción a la vez</p>
     <iframe class="animacion" data-src="animaciones/01-single-thread.html"
             title="Animación: un solo hilo ejecuta una instrucción a la vez"></iframe>
   </section>
 
-  <!-- ===== 3. JS es síncrono ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">02</p>
-        <h2 class="slide__titulo">Y es síncrono</h2>
-      </div>
-    </header>
+  <!-- ===== 6. JS es síncrono ===== -->
+  <section class="slide slide--partida">
+    <p class="texto"><strong>JS es síncrono:</strong><br>El código se ejecuta línea por línea, en orden</p>
     <iframe class="animacion" data-src="animaciones/02-sincrono.html"
             title="Animación: las instrucciones se ejecutan en orden, una tras otra"></iframe>
   </section>
 
-  <!-- ===== 4. Event Loop y callbacks ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">03</p>
-        <h2 class="slide__titulo">Event Loop y callbacks</h2>
-      </div>
-    </header>
+  <!-- ===== 7. Asincronía con el Event Loop ===== -->
+  <section class="slide slide--partida">
+    <div>
+      <p class="texto"><strong>JS maneja asincronía con el Event Loop:</strong><br>Los callbacks esperan a que el hilo esté libre</p>
+      <p class="nota">Callback: Una FN que pasas a otra FN para que esa la ejecute después</p>
+    </div>
     <iframe class="animacion" data-src="animaciones/03-event-loop-callbacks.html"
             title="Animación: el event loop y los callbacks"></iframe>
   </section>
 
-  <!-- ===== 5. Call Stack ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">04</p>
-        <h2 class="slide__titulo">Call Stack</h2>
-      </div>
-    </header>
+  <!-- ===== 8. Síncrono vs asíncrono ===== -->
+  <section class="slide slide--comparacion">
+    <p class="texto"><strong>Síncrono:</strong><br>Código que se ejecuta línea por línea, al instante. Bloquea, porque espera a que todo termine.</p>
+<pre class="codigo-slide">console.<span class="fn">log</span>(<span class="str">'1'</span>);
+console.<span class="fn">log</span>(<span class="str">'2'</span>);  <span class="cm">// Espera a que 1 termine</span></pre>
+    <p class="texto"><strong>Asíncrono:</strong><br>Código que se programa y ejecuta después.<br>No bloquea.</p>
+<pre class="codigo-slide"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> console.<span class="fn">log</span>(<span class="str">'2'</span>), <span class="num">0</span>);
+console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class="cm">// No espera a setTimeout</span>
+<span class="cm">// Output: 1, 2</span></pre>
+  </section>
+
+  <!-- ===== 9. Pausa para preguntas ===== -->
+  <section class="slide slide--centrada">
+    <p class="frase frase--mediana">¿Todo chido<br>hasta aquí? :)</p>
+  </section>
+
+  <!-- ===== 10. Sección: Actores ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <h2 class="seccion"><span class="seccion__titulo seccion__titulo--enorme">ACTORES</span></h2>
+  </section>
+
+  <!-- ===== 11. Actores: Call Stack ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div class="actores">
+      <div class="actor actor--activo">Call Stack</div>
+      <div class="actor">Event Loop</div>
+      <div class="actor">Web APIs</div>
+      <div class="actor">Colas de tareas<br>(Micro y Macro)</div>
+    </div>
+  </section>
+
+  <!-- ===== 12. Call Stack ===== -->
+  <section class="slide slide--partida slide--partida-ancha">
+    <div class="lista">
+      <p><strong>Call Stack:</strong></p>
+      <ul>
+        <li class="aparece">Es una pila LIFO (último en entrar, primero en salir).</li>
+        <li class="aparece">Es donde se ven las funciones/ operaciones que el hilo está ejecutando.</li>
+        <li class="aparece">Es bloqueante PORQUE el hilo de JS solo puede hacer una cosa a la vez.</li>
+        <li class="aparece">Es una visualización del trabajo del hilo, no quien controla el flujo.</li>
+      </ul>
+    </div>
     <iframe class="animacion" data-src="animaciones/04-call-stack.html"
             title="Animación: la pila de llamadas"></iframe>
   </section>
 
-  <!-- ===== 6. Event Loop ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">05</p>
-        <h2 class="slide__titulo">Event Loop</h2>
-      </div>
-    </header>
+  <!-- ===== 13. Actores: Event Loop ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div class="actores">
+      <div class="actor">Call Stack</div>
+      <div class="actor actor--activo">Event Loop</div>
+      <div class="actor">Web APIs</div>
+      <div class="actor">Colas de tareas<br>(Micro y Macro)</div>
+    </div>
+  </section>
+
+  <!-- ===== 14. Event Loop ===== -->
+  <section class="slide slide--partida slide--partida-ancha">
+    <div class="lista">
+      <p><strong>Event Loop:</strong></p>
+      <ul>
+        <li class="aparece">Ciclo eterno que revisa si el Call Stack está vacío.</li>
+        <li class="aparece">Es el vigilante que coordina TODO.</li>
+        <li class="aparece">Sin él, JavaScript no sería asíncrono.</li>
+      </ul>
+    </div>
     <iframe class="animacion" data-src="animaciones/05-event-loop.html"
             title="Animación: el bucle de eventos"></iframe>
   </section>
 
-  <!-- ===== 7. Web APIs ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">06</p>
-        <h2 class="slide__titulo">Web APIs</h2>
-      </div>
-    </header>
+  <!-- ===== 15. Actores: Web APIs ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div class="actores">
+      <div class="actor">Call Stack</div>
+      <div class="actor">Event Loop</div>
+      <div class="actor actor--activo">Web APIs</div>
+      <div class="actor">Colas de tareas<br>(Micro y Macro)</div>
+    </div>
+  </section>
+
+  <!-- ===== 16. Web APIs ===== -->
+  <section class="slide slide--partida slide--partida-ancha">
+    <div class="lista">
+      <p><strong>Web APIs:</strong></p>
+      <ul>
+        <li class="aparece">No son parte de JS.</li>
+        <li class="aparece">Servicios del navegador que hacen trabajo en paralelo.</li>
+        <li class="aparece">Timers, Network, DOM.</li>
+      </ul>
+    </div>
     <iframe class="animacion" data-src="animaciones/06-web-apis.html"
             title="Animación: las Web APIs del navegador"></iframe>
   </section>
 
-  <!-- ===== 8. Categorías de Web APIs ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">07</p>
-        <h2 class="slide__titulo">4 categorías de Web APIs</h2>
-      </div>
-    </header>
+  <!-- ===== 17. Categorías de Web APIs ===== -->
+  <section class="slide slide--partida slide--partida-media">
+    <p class="encabezado-lateral">4 categorías importantes de Web APIs:</p>
     <iframe class="animacion" data-src="animaciones/07-web-apis-categorias.html"
             title="Animación: las cuatro categorías de Web APIs"></iframe>
   </section>
 
-  <!-- ===== 9. Macrotask Queue ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">08</p>
-        <h2 class="slide__titulo">Macrotask Queue</h2>
+  <!-- ===== 18. Actores: Colas de tareas ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div class="actores">
+      <div class="actor">Call Stack</div>
+      <div class="actor">Event Loop</div>
+      <div class="actor">Web APIs</div>
+      <div class="actor actor--activo">Colas de tareas<br>(Micro y Macro)</div>
+    </div>
+  </section>
+
+  <!-- ===== 19. Macrotask Queue ===== -->
+  <section class="slide slide--partida slide--partida-cola">
+    <div class="cola">
+      <p class="cola__alias">Callback queue</p>
+      <p class="cola__titulo">Macrotask Queue:</p>
+      <ul>
+        <li class="aparece">Cola para Web APIs.</li>
+        <li class="aparece">Se ejecuta UNO por ciclo.</li>
+        <li class="aparece">Prioridad BAJA.</li>
+      </ul>
+      <div class="aparece">
+        <p class="cola__ejemplos"><strong>Ejemplos Macro Tasks (Web APIs):</strong></p>
+        <ul class="cola__codigo">
+          <li>setTimeout(() =&gt; {}, 0);</li>
+          <li>setInterval(() =&gt; {}, 1000);</li>
+          <li>fetch('/url');</li>
+          <li>addEventListener('click', ...);</li>
+          <li>XMLHttpRequest;</li>
+        </ul>
       </div>
-    </header>
+    </div>
     <iframe class="animacion" data-src="animaciones/08-macrotask-queue.html"
             title="Animación: la cola de macrotasks"></iframe>
   </section>
 
-  <!-- ===== 10. Microtask Queue ===== -->
-  <section class="slide">
-    <header class="slide__encabezado">
-      <div>
-        <p class="slide__kicker">09</p>
-        <h2 class="slide__titulo">Microtask Queue</h2>
+  <!-- ===== 20. Microtask Queue ===== -->
+  <section class="slide slide--partida slide--partida-cola">
+    <div class="cola">
+      <p class="cola__titulo">Microtask Queue:</p>
+      <ul>
+        <li class="aparece">Cola para Promises.</li>
+        <li class="aparece">Se ejecutan TODOS por ciclo.</li>
+        <li class="aparece">Prioridad ALTA.</li>
+      </ul>
+      <div class="aparece">
+        <p class="cola__ejemplos"><strong>Ejemplos Micro Tasks (Promises):</strong></p>
+        <ul class="cola__codigo">
+          <li>Promise.resolve().then(() =&gt; {});</li>
+          <li>Promise.reject().catch(() =&gt; {});</li>
+          <li>Promise.finally(() =&gt; {});</li>
+          <li>Promise.resolve().then(() =&gt; {});</li>
+        </ul>
       </div>
-    </header>
+    </div>
     <iframe class="animacion" data-src="animaciones/09-microtask-queue.html"
             title="Animación: la cola de microtasks y su prioridad"></iframe>
   </section>
 
-  <!-- ===== 11. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
-  <section class="slide slide--lienzo">
+  <!-- ===== 21. Sección: Ejemplos ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <h2 class="seccion"><span class="seccion__titulo seccion__titulo--ejemplos">Ejemplos</span></h2>
+  </section>
+
+  <!--
+    ===== PROVISIONAL =====
+    Falta el diseño de esta slide: se deja la animación a sangre para que la
+    charla no se quede sin ella.
+  -->
+
+  <!-- ===== 22. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
+  <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
 
+  <!-- ===== 23. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
+  <section class="slide slide--oscura slide--lienzo">
+    <iframe class="animacion animacion--ancha" data-src="animaciones/11-ejemplo-promise.html"
+            title="Animación: setTimeout contra Promise, la microtask va primero"></iframe>
+  </section>
+
+  <!-- ===== 24. Ejemplo 3: Promesas encadenadas (16:9) ===== -->
+  <section class="slide slide--oscura slide--lienzo">
+    <iframe class="animacion animacion--ancha" data-src="animaciones/12-ejemplo-promesas-encadenadas.html"
+            title="Animación: promesas encadenadas, una microtask encola otra en el mismo ciclo"></iframe>
+  </section>
+
+  <!-- ===== 25. Del ejemplo a la vida real ===== -->
+  <section class="slide slide--texto">
+    <div class="resumen">
+      <p class="resumen__titulo">¿Te ha pasado?</p>
+      <ul class="puntos">
+        <li class="aparece"><strong>Tu página se congela</strong> mientras procesa algo pesado.
+          <span class="puntos__causa">Bloqueaste el único hilo: nada más puede ejecutarse.</span></li>
+        <li class="aparece"><strong>El loader nunca aparece</strong>, aunque lo muestras antes del cálculo.
+          <span class="puntos__causa">El navegador no repinta hasta que el Call Stack se vacía.</span></li>
+        <li class="aparece">Haces <strong>console.log(datos)</strong> y sale <strong>undefined</strong>.
+          <span class="puntos__causa">El fetch todavía no respondía: su callback espera en una cola.</span></li>
+        <li class="aparece"><strong>setTimeout(fn, 0)</strong> no se ejecuta "ya".
+          <span class="puntos__causa">Espera su turno en la Macrotask Queue, detrás de todas las microtasks.</span></li>
+      </ul>
+      <p class="puntos__remate aparece">Spoiler: todo eso es el Event Loop.</p>
+    </div>
+  </section>
+
+  <!-- ===== 26. Resumen de la charla ===== -->
+  <section class="slide slide--texto">
+    <div class="resumen">
+      <p class="resumen__titulo">En resumen:</p>
+      <ul class="puntos">
+        <li class="aparece"><strong>JavaScript</strong> hace una sola cosa a la vez: tiene <strong>un solo hilo</strong>.</li>
+        <li class="aparece">Lo que tarda se <strong>delega</strong> a las <strong>Web APIs</strong>, y JS sigue con lo demás.</li>
+        <li class="aparece">El <strong>Event Loop</strong> es el ciclo eterno que decide <strong>qué se ejecuta y cuándo</strong>.</li>
+        <li class="aparece">Primero <strong>todas las microtasks</strong> (Promises), luego <strong>una macrotask</strong> (setTimeout, eventos) por ciclo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 27. Respuesta a la slide 2 ("qué aburrido") ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div>
+      <p class="frase frase--mediana">¿Aburrido? Tal vez.</p>
+      <p class="remate aparece">Pero está detrás de cada clic,<br>cada fetch y cada app que usas.</p>
+    </div>
+  </section>
+
+  <!-- ===== 28. Por qué importa ===== -->
+  <section class="slide slide--texto">
+    <div class="resumen">
+      <p class="resumen__titulo">¿Por qué importa?</p>
+      <ul class="puntos">
+        <li class="aparece"><strong>No es para memorizarlo:</strong> es para tener las <strong>nociones</strong> y entender por qué tu código hace lo que hace.</li>
+        <li class="aparece">En un mundo donde la <strong>IA</strong> escribe código, saber <strong>qué pasa por detrás</strong> es tu <strong>diferenciador</strong>.</li>
+        <li class="aparece">Es la diferencia entre <strong>hacer lo que te dicen</strong> y ser un <strong>software engineer</strong>: alguien que sabe cómo funcionan <strong>los fierros</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 29. Cierre ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <h2 class="seccion"><span class="seccion__antetitulo seccion__antetitulo--cierre">Gracias wdt :)</span></h2>
+  </section>
+
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
   <div class="barra"><div class="barra__progreso"></div></div>
-  <div class="contador">1 / 11</div>
+  <div class="contador">1 / 29</div>
+
+  <!-- Barra de control de la animación: deck.js la coloca debajo del iframe
+       de la slide actual y la esconde en las slides sin animación -->
+  <div class="control-animacion">
+    <button type="button" data-accion="reiniciar" title="Reiniciar">
+      <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>
+    </button>
+    <button type="button" data-accion="paso-anterior" title="Paso anterior">
+      <svg viewBox="0 0 24 24"><path d="M6 5v14M19 5l-9 7 9 7z"/></svg>
+    </button>
+    <button type="button" data-accion="alternar" class="control-animacion__principal" title="Pausar / reanudar">
+      <svg class="icono-pausa" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>
+      <svg class="icono-reproducir" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+    </button>
+    <button type="button" data-accion="paso-siguiente" title="Paso siguiente">
+      <svg viewBox="0 0 24 24"><path d="M18 5v14M5 5l9 7-9 7z"/></svg>
+    </button>
+    <span class="control-animacion__paso"></span>
+  </div>
 
   <nav class="flechas">
     <button class="flechas__anterior" type="button" aria-label="Slide anterior">&larr;</button>
@@ -156,8 +367,9 @@
     <div class="ayuda-deck__tarjeta">
       <h2>Controles</h2>
       <table>
-        <tr><td><kbd>&rarr;</kbd> <kbd>Espacio</kbd></td><td>Slide siguiente</td></tr>
-        <tr><td><kbd>&larr;</kbd></td><td>Slide anterior</td></tr>
+        <tr><td><kbd>&rarr;</kbd> <kbd>Espacio</kbd> <kbd>Clic</kbd> <kbd>Rueda &darr;</kbd></td><td>Slide siguiente</td></tr>
+        <tr><td><kbd>&larr;</kbd> <kbd>Clic derecho</kbd> <kbd>Rueda &uarr;</kbd></td><td>Slide anterior</td></tr>
+        <tr><td>Mover el mouse</td><td>Controles de la animación</td></tr>
         <tr><td><kbd>Inicio</kbd> <kbd>Fin</kbd></td><td>Primera / última slide</td></tr>
         <tr><td><kbd>F</kbd></td><td>Pantalla completa</td></tr>
         <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
