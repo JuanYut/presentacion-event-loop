@@ -182,10 +182,49 @@ html, body {
   display: block;
   font-size: 380px;
   line-height: 0.9;
-  margin-top: -38px;
+  /* El padding es para el brillo (ver más abajo) y el margen lo compensa */
+  padding: 0.12em 0 0.3em;
+  margin-top: calc(-38px - 0.12em);
+  margin-bottom: -0.3em;
   /* Las letras arrancan un poco adentro de su caja, más cuanto más grandes:
      se compensa para que ambas líneas queden alineadas con la foto. */
   margin-left: -29px;
+}
+
+/* Movimiento leve y cíclico de la portada, con sus propios elementos: el
+   avatar flota y "Event Loop" tiene un brillo que lo cruza y descansa. Solo
+   para que la portada no se sienta congelada mientras la gente llega. */
+.ponente__foto {
+  animation: flotar 6s ease-in-out infinite;
+}
+@keyframes flotar {
+  50% { transform: translateY(-8px); }
+}
+
+/* El brillo es un degradado recortado a la forma de las letras. El span
+   lleva padding (arriba, junto a su tamaño) porque background-clip solo
+   pinta dentro de la caja: con line-height 0.9 la "p" y la parte alta de las
+   letras quedarían fuera y desaparecerían. */
+.portada__tema {
+  background: linear-gradient(100deg,
+    var(--amarillo) 38%, #fffbe0 47%, #ffffff 50%, #fffbe0 53%, var(--amarillo) 62%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: brillar 7s ease-in-out infinite;
+}
+@keyframes brillar {
+  0%   { background-position: 100% 0; }
+  40%  { background-position: 0% 0; }
+  100% { background-position: 0% 0; }
+}
+
+/* Quien tenga el movimiento reducido activado en su sistema la ve quieta */
+@media (prefers-reduced-motion: reduce) {
+  .ponente__foto,
+  .portada__tema { animation: none; }
 }
 
 /* 4b. Frase grande: una pregunta o comentario al público */
