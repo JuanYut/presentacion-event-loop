@@ -267,18 +267,19 @@ html, body {
   font-weight: 700;
   line-height: 1.15;
 }
-/* "¿Te ha pasado?": cada bullet es un síntoma y, debajo, su causa */
-.puntos__causa {
-  display: block;
-  margin-top: 4px;
-  font-size: 32px;
-  line-height: 1.35;
-  opacity: 0.72;
+/* Cierre emocional: líneas que se revelan como un discurso, hasta el golpe
+   final en grande. Van centradas y con aire para leerse de una en una. */
+.final__linea {
+  font-size: 60px;
+  font-weight: 400;
+  line-height: 1.25;
 }
-.puntos__remate {
-  margin-top: 48px !important;
-  font-size: 52px;
-  font-weight: 700;
+.final__linea + .final__linea { margin-top: 40px !important; }
+.final__golpe { margin-top: 72px !important; }
+.final__eco {
+  margin-top: 56px !important;
+  font-size: 72px;
+  font-weight: 400;
   line-height: 1.2;
 }
 
