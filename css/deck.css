@@ -1,0 +1,315 @@
+/* ============================================================
+   css/deck.css
+   Estilos del deck (la presentación en sí).
+
+   Las animaciones traen sus propios estilos en shared/styles.css: este
+   archivo NO los toca, solo viste las slides que las contienen.
+
+   Secciones:
+     1. Variables (paleta de la presentación)
+     2. Escenario 1920x1080 escalable
+     3. Slide: rejilla base y transición
+     4. Tipografía de las slides
+     5. Contenedor de animaciones (iframe)
+     6. Barra inferior: progreso, contador y botones
+     7. Ayuda de teclado
+   ============================================================ */
+
+/* ---------- 1. Variables ---------- */
+:root {
+  /* La identidad de la presentación: amarillo de fondo, tinta casi negra.
+     Son los mismos valores que usan las animaciones en .stage--slide,
+     ahí invertidos para que el cuadrado contraste sobre la slide. */
+  --amarillo: #FFEA00;
+  --tinta: #1E1E1E;
+  --tinta-suave: rgba(30, 30, 30, 0.62);
+  --tinta-tenue: rgba(30, 30, 30, 0.16);
+
+  --fuente-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+
+  /* Márgenes internos de una slide (sobre el lienzo de 1920x1080) */
+  --margen-slide: 96px;
+}
+
+/* ---------- 2. Escenario ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--tinta);   /* lo que queda fuera del 16:9 */
+  color: var(--tinta);
+  font-family: var(--fuente-ui);
+  overflow: hidden;
+}
+
+/* Lienzo fijo de 1920x1080 que deck.js escala con transform. Fijar el tamaño
+   en píxeles y escalar es lo que hace que la presentación se vea idéntica en
+   el portátil y en el proyector, sin importar la resolución. */
+.deck {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--escala, 1));
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+/* ---------- 3. Slide ---------- */
+.slide {
+  position: absolute;
+  inset: 0;
+  background: var(--amarillo);
+  padding: var(--margen-slide);
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 40px;
+  align-content: start;
+
+  /* Todas las slides viven en el DOM; solo la activa es visible. Así las
+     animaciones ya cargadas no se reinician al volver atrás. */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease;
+}
+.slide.activa {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Slide de portada: todo centrado, sin rejilla de dos filas */
+.slide--portada {
+  display: grid;
+  grid-template-rows: none;
+  place-content: center;
+  text-align: center;
+  gap: 32px;
+}
+
+/* Slide cuyo contenido es solo la animación, a sangre (para la 16:9 grande) */
+.slide--lienzo {
+  padding: 48px;
+  grid-template-rows: 1fr;
+}
+
+/* ---------- 4. Tipografía ---------- */
+.slide__titulo {
+  margin: 0;
+  font-size: 92px;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.slide--portada .slide__titulo { font-size: 132px; }
+
+.slide__subtitulo {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--tinta-suave);
+}
+
+/* Etiqueta pequeña encima del título (tema de la sección) */
+.slide__kicker {
+  margin: 0 0 20px;
+  font-family: var(--fuente-codigo);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* Lista de puntos: grande, pensada para leerse de lejos */
+.slide__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 28px;
+  align-content: center;
+  font-size: 44px;
+  line-height: 1.35;
+}
+.slide__lista li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 20px;
+  align-items: baseline;
+}
+/* Viñeta cuadrada, del mismo lenguaje visual que los bloques de las animaciones */
+.slide__lista li::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--tinta);
+  transform: translateY(-4px);
+}
+
+.slide__lista code,
+.slide__subtitulo code,
+.slide__titulo code {
+  font-family: var(--fuente-codigo);
+  font-size: 0.88em;
+  padding: 0.08em 0.3em;
+  border-radius: 8px;
+  background: var(--tinta);
+  color: var(--amarillo);
+}
+
+/* Fila superior de una slide con título a la izquierda y nota a la derecha */
+.slide__encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+/* ---------- 5. Animaciones embebidas ---------- */
+/* El iframe carga la animación tal cual: controls.js dentro de ella se encarga
+   de escalar su propio escenario al tamaño que le demos aquí. Por eso basta
+   con respetar la proporción correcta (1:1 o 16:9) y no se deforma nada. */
+.animacion {
+  justify-self: center;
+  align-self: center;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1 / 1;          /* animaciones cuadradas (1080x1080) */
+
+  border: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--tinta);
+  box-shadow: 0 24px 60px rgba(30, 30, 30, 0.22);
+}
+
+/* Animaciones en formato 16:9 (la del ejemplo de setTimeout) */
+.animacion--ancha {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+}
+
+/* Animación al lado del texto: dos columnas */
+.slide--partida .slide__cuerpo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  min-height: 0;
+}
+.slide__cuerpo { min-height: 0; }
+
+/* ---------- 6. Barra inferior ---------- */
+/* Discreta: tinta sobre amarillo, sin robar atención a la slide. */
+.barra {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background: var(--tinta-tenue);
+  z-index: 5;
+}
+.barra__progreso {
+  height: 100%;
+  width: 0;
+  background: var(--tinta);
+  transition: width 0.35s ease;
+}
+
+.contador {
+  position: absolute;
+  right: 40px;
+  bottom: 28px;
+  z-index: 5;
+  font-family: var(--fuente-codigo);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--tinta-suave);
+  user-select: none;
+}
+
+/* Botones de navegación: aparecen al mover el ratón y se van solos, para no
+   estorbar cuando se presenta con teclado o con un mando. */
+.flechas {
+  position: absolute;
+  left: 40px;
+  bottom: 24px;
+  z-index: 5;
+  display: flex;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.deck.raton-activo .flechas { opacity: 1; }
+
+.flechas button {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-family: var(--fuente-ui);
+  color: var(--tinta);
+  background: transparent;
+  border: 3px solid var(--tinta-tenue);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.flechas button:hover {
+  border-color: var(--tinta);
+  background: rgba(30, 30, 30, 0.08);
+}
+.flechas button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ---------- 7. Ayuda de teclado ---------- */
+.ayuda-deck {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: rgba(30, 30, 30, 0.88);
+  transition: opacity 0.2s ease;
+}
+.ayuda-deck.oculto {
+  opacity: 0;
+  pointer-events: none;
+}
+.ayuda-deck__tarjeta {
+  background: var(--amarillo);
+  border-radius: 28px;
+  padding: 56px 64px;
+}
+.ayuda-deck__tarjeta h2 {
+  margin: 0 0 32px;
+  font-size: 44px;
+}
+.ayuda-deck__tarjeta table {
+  border-collapse: separate;
+  border-spacing: 32px 16px;
+  margin: -16px -32px;
+  font-size: 30px;
+}
+.ayuda-deck__tarjeta td:first-child { text-align: right; }
+.ayuda-deck__tarjeta kbd {
+  font-family: var(--fuente-codigo);
+  font-size: 0.85em;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--tinta);
+  color: var(--amarillo);
+}

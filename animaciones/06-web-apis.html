@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>06 · Web APIs</title>
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* ---------- Disposición ----------
+       Izquierda: la caja "JS" con su único hilo trabajando.
+       Línea punteada: frontera. Derecha: el navegador con tres servicios
+       (Timers, Network, DOM) trabajando en paralelo, cada uno con su anillo. */
+
+    .caja-js {
+      position: absolute;
+      left: 60px;
+      top: 180px;
+      width: 360px;
+      height: 720px;
+      border: 4px solid var(--acento);
+      border-radius: 32px;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .frontera {
+      position: absolute;
+      left: 478px;
+      top: 140px;
+      width: 4px;
+      height: 800px;
+      background: repeating-linear-gradient(180deg,
+        var(--acento-suave) 0 16px, transparent 16px 32px);
+    }
+    .wa .slide__slot   { left: 120px; top: 420px; width: 240px; height: 220px; }
+    .wa .slide__bloque { left: 175px; top: 455px; }
+
+    /* Tarjetas de servicios del navegador */
+    .servicio {
+      position: absolute;
+      left: 520px;
+      width: 500px;
+      height: 180px;
+      display: grid;
+      grid-template-columns: 120px 1fr 80px;
+      align-items: center;
+      padding: 0 28px 0 20px;
+      border: 3px solid var(--acento-suave);
+      border-radius: 24px;
+      color: var(--acento);
+      visibility: hidden;
+      opacity: 0;
+    }
+    .servicio__nombre { font-size: 30px; font-weight: 700; letter-spacing: 0.04em; }
+    .servicio__icono  { width: 96px; height: 96px; }
+    .servicio__icono * { fill: none; stroke: var(--acento); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .servicio__icono .nodo { fill: rgba(255, 234, 0, 0); }   /* GSAP lo rellena al "pulsar" */
+    .servicio__anillo { width: 64px; height: 64px; justify-self: end; }
+    /* ✓ que aparece al terminar el trabajo */
+    .servicio__ok {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 56px;
+      font-weight: 700;
+      visibility: hidden;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stage stage--cuadrado stage--slide wa">
+
+  <!-- JS -->
+  <div class="caja-js" id="caja-js"></div>
+  <div class="slide__etiqueta" id="et-js" style="left: 92px; top: 210px; opacity: 0; visibility: hidden;">JS · 1 hilo</div>
+  <div class="slide__slot" id="slot"><div class="slide__progreso" id="progreso"></div></div>
+  <div class="slide__bloque" id="bloque">1</div>
+
+  <div class="frontera"></div>
+
+  <!-- Navegador -->
+  <div class="slide__etiqueta" id="et-nav" style="left: 520px; top: 210px; opacity: 0; visibility: hidden;">Navegador · en paralelo</div>
+
+  <div class="servicio" style="top: 270px" data-trabajo="2.4">
+    <svg class="servicio__icono" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="36"/>
+      <path d="M40 8h20"/>
+      <path class="manecilla" d="M50 54V30"/>
+    </svg>
+    <div class="servicio__nombre">Timers</div>
+    <svg class="servicio__anillo" viewBox="0 0 40 40"><circle class="slide__anillo-fondo" cx="20" cy="20" r="15" stroke-width="5"/>
+      <circle class="slide__anillo-arco" cx="20" cy="20" r="15" stroke-width="5" stroke-dasharray="94.25" stroke-dashoffset="94.25" transform="rotate(-90 20 20)"/></svg>
+    <div class="servicio__ok">✓</div>
+  </div>
+
+  <div class="servicio" style="top: 480px" data-trabajo="4.0">
+    <svg class="servicio__icono" viewBox="0 0 100 100">
+      <path class="flecha-arriba" d="M34 80V22M20 36l14-14 14 14"/>
+      <path class="flecha-abajo" d="M66 20v58M52 64l14 14 14-14"/>
+    </svg>
+    <div class="servicio__nombre">Network</div>
+    <svg class="servicio__anillo" viewBox="0 0 40 40"><circle class="slide__anillo-fondo" cx="20" cy="20" r="15" stroke-width="5"/>
+      <circle class="slide__anillo-arco" cx="20" cy="20" r="15" stroke-width="5" stroke-dasharray="94.25" stroke-dashoffset="94.25" transform="rotate(-90 20 20)"/></svg>
+    <div class="servicio__ok">✓</div>
+  </div>
+
+  <div class="servicio" style="top: 690px" data-trabajo="3.2">
+    <svg class="servicio__icono" viewBox="0 0 100 100">
+      <path d="M50 30v14M50 44H26v14M50 44h24v14"/>
+      <rect class="nodo" x="36" y="10" width="28" height="20" rx="5"/>
+      <rect class="nodo" x="12" y="58" width="28" height="20" rx="5"/>
+      <rect class="nodo" x="60" y="58" width="28" height="20" rx="5"/>
+    </svg>
+    <div class="servicio__nombre">DOM</div>
+    <svg class="servicio__anillo" viewBox="0 0 40 40"><circle class="slide__anillo-fondo" cx="20" cy="20" r="15" stroke-width="5"/>
+      <circle class="slide__anillo-arco" cx="20" cy="20" r="15" stroke-width="5" stroke-dasharray="94.25" stroke-dashoffset="94.25" transform="rotate(-90 20 20)"/></svg>
+    <div class="servicio__ok">✓</div>
+  </div>
+
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<script src="../vendor/gsap.min.js"></script>
+<script src="../shared/controls.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const stage = document.querySelector('.stage');
+  const ACENTO       = getComputedStyle(stage).getPropertyValue('--acento').trim();
+  const ACENTO_SUAVE = getComputedStyle(stage).getPropertyValue('--acento-suave').trim();
+
+  const servicios = gsap.utils.toArray('.servicio');
+  const PERIMETRO  = 94.25;
+  const T_ACTIVIDAD = 5.0;   // segundos que dura la fase de "todos trabajando"
+
+  const tl = gsap.timeline({ paused: true, defaults: { duration: DUR.normal, ease: EASE.suave } });
+
+  tl.addLabel('inicio');
+  esperar(tl, DUR.margen);
+
+  // 1) Aparece JS con su hilo ocupado
+  tl.addLabel('js');
+  tl.fromTo('#caja-js', { autoAlpha: 0, scale: 0.95 }, { autoAlpha: 1, scale: 1, duration: DUR.lenta, ease: EASE.suave });
+  tl.to('#et-js', { autoAlpha: 0.6, duration: DUR.normal }, '<+=0.3');
+  tl.fromTo('#bloque', { autoAlpha: 0, x: -200 }, { autoAlpha: 1, x: 0, duration: DUR.lenta, ease: EASE.mover }, '<');
+  tl.to('#slot', { borderColor: ACENTO, duration: DUR.rapida });
+  const tHilo = tl.duration();
+
+  // 2) Aparecen los servicios del navegador, uno tras otro
+  tl.addLabel('navegador');
+  tl.to('#et-nav', { autoAlpha: 0.6, duration: DUR.normal });
+  servicios.forEach((s, i) => {
+    tl.fromTo(s, { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: DUR.lenta, ease: EASE.suave }, `<+=${i ? 0.35 : 0.2}`);
+  });
+
+  // 3) Todos trabajan a la vez: JS en lo suyo, cada servicio con su propio ritmo
+  tl.addLabel('en-paralelo');
+  const tInicio = tl.duration();
+  // El hilo de JS se llena y se vacía varias veces (sigue ocupado con su propio trabajo)
+  tl.fromTo('#progreso', { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: 1.6, ease: 'none', repeat: 2 }, tInicio);
+  tl.to('#progreso', { autoAlpha: 0, duration: DUR.rapida }, tInicio + 4.8);
+  tl.to('#slot', { borderColor: ACENTO_SUAVE, duration: DUR.rapida }, tInicio + 4.8);
+
+  servicios.forEach((s) => {
+    const trabajo = Number(s.dataset.trabajo);
+    const arco = s.querySelector('.slide__anillo-arco');
+    tl.to(s, { borderColor: ACENTO, duration: DUR.rapida }, tInicio);
+    tl.fromTo(arco, { strokeDashoffset: PERIMETRO }, { strokeDashoffset: 0, duration: trabajo, ease: 'none' }, tInicio);
+    // Al terminar: el anillo se cambia por un ✓ y la tarjeta vuelve a su contorno tenue
+    tl.to(s.querySelector('.servicio__anillo'), { autoAlpha: 0, duration: DUR.rapida }, tInicio + trabajo);
+    tl.fromTo(s.querySelector('.servicio__ok'), { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: DUR.rapida, ease: EASE.entrada }, tInicio + trabajo);
+    tl.to(s, { borderColor: ACENTO_SUAVE, duration: DUR.normal }, tInicio + trabajo + 0.3);
+  });
+
+  // Íconos en movimiento mientras trabajan
+  // Nota: en SVG el centro de giro se indica con svgOrigin (coordenadas del viewBox)
+  tl.to('.manecilla', { rotation: 360 * 2, svgOrigin: '50 54', duration: 2.4, ease: 'none' }, tInicio);
+  tl.to('.flecha-arriba', { y: -8, duration: 0.4, repeat: 9, yoyo: true, ease: 'sine.inOut' }, tInicio);
+  tl.to('.flecha-abajo',  { y: 8,  duration: 0.4, repeat: 9, yoyo: true, ease: 'sine.inOut' }, tInicio);
+  tl.to('.nodo', { fill: ACENTO, duration: 0.4, stagger: { each: 0.4, repeat: 3, yoyo: true } }, tInicio);
+
+  tl.addLabel('fin', tInicio + T_ACTIVIDAD);
+  esperar(tl, DUR.margen, tInicio + T_ACTIVIDAD);
+
+  configurarControles(tl);
+  configurarNavegacion();
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>07 · Categorías de Web APIs</title>
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* ---------- Disposición: cuadrícula 2x2 de tarjetas ----------
+       Timers, Network, DOM/Events y Promises (esta última con contorno punteado
+       y etiqueta "JS puro" porque no es una Web API). */
+
+    .tarjeta {
+      position: absolute;
+      width: 460px;
+      height: 420px;
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      justify-items: center;
+      align-items: center;
+      padding: 36px 32px 40px;
+      border: 3px solid var(--acento);
+      border-radius: 28px;
+      color: var(--acento);
+      text-align: center;
+    }
+    .tarjeta--promesa { border-style: dashed; }
+    .tarjeta__icono { width: 150px; height: 150px; }
+    #t-dom .tarjeta__icono { width: 180px; height: 180px; }   /* un poco más grande */
+    .tarjeta__icono .cursor { stroke-width: 3; }               /* cursor más fino */
+    .tarjeta__icono * { fill: none; stroke: var(--acento); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .tarjeta__icono .nodo { fill: rgba(255, 234, 0, 0); }
+    .tarjeta__titulo { font-size: 34px; font-weight: 700; letter-spacing: 0.04em; margin-top: 8px; }
+    .tarjeta__apis { font-size: 20px; font-weight: 500; opacity: 0.7; line-height: 1.6; margin-top: 8px; }
+    /* Etiqueta "JS puro" en la esquina de Promises */
+    .tarjeta__badge {
+      position: absolute;
+      top: -18px;
+      right: 28px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: var(--acento);
+      color: var(--fondo);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    /* Onda del click en el ícono de DOM/Events */
+    .tarjeta__icono .onda { opacity: 0; stroke-width: 2; }   /* aro fino: se escala x3 al expandirse */
+  </style>
+</head>
+<body>
+
+<div class="stage stage--cuadrado stage--slide cat">
+
+  <!-- Timers -->
+  <div class="tarjeta" style="left: 60px; top: 100px" id="t-timers">
+    <svg class="tarjeta__icono" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="36"/>
+      <path d="M40 8h20"/>
+      <path class="manecilla" d="M50 54V30"/>
+    </svg>
+    <div class="tarjeta__titulo">Timers</div>
+    <div class="tarjeta__apis">setTimeout<br>setInterval</div>
+  </div>
+
+  <!-- Network -->
+  <div class="tarjeta" style="left: 560px; top: 100px" id="t-network">
+    <svg class="tarjeta__icono" viewBox="0 0 100 100">
+      <path class="flecha-arriba" d="M34 80V22M20 36l14-14 14 14"/>
+      <path class="flecha-abajo" d="M66 20v58M52 64l14 14 14-14"/>
+    </svg>
+    <div class="tarjeta__titulo">Network</div>
+    <div class="tarjeta__apis">fetch<br>XMLHttpRequest</div>
+  </div>
+
+  <!-- DOM / Events -->
+  <div class="tarjeta" style="left: 60px; top: 560px" id="t-dom">
+    <svg class="tarjeta__icono" viewBox="0 0 100 100">
+      <rect class="nodo boton" x="18" y="40" width="64" height="44" rx="10"/>
+      <circle class="onda" cx="50" cy="62" r="10"/>
+      <path class="cursor" d="M56 56l22 8-9 3 6 9-4 3-6-9-6 8z"/>
+    </svg>
+    <div class="tarjeta__titulo">DOM / Events</div>
+    <div class="tarjeta__apis">addEventListener<br>click, input, …</div>
+  </div>
+
+  <!-- Promises -->
+  <div class="tarjeta tarjeta--promesa" style="left: 560px; top: 560px" id="t-promesa">
+    <div class="tarjeta__badge">JS puro</div>
+    <svg class="tarjeta__icono" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="38"/>
+      <path class="reloj-promesa" d="M50 50V28"/>
+      <path class="check-promesa" d="M32 52l12 12 24-26" stroke-dasharray="60" stroke-dashoffset="60"/>
+    </svg>
+    <div class="tarjeta__titulo">Promises</div>
+    <div class="tarjeta__apis">pending → resolved<br>.then / async · await</div>
+  </div>
+
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<script src="../vendor/gsap.min.js"></script>
+<script src="../shared/controls.js"></script>
+<script>
+  const stage = document.querySelector('.stage');
+  const ACENTO = getComputedStyle(stage).getPropertyValue('--acento').trim();
+
+  // ---------- Ciclo ----------
+  // Esta animación no tiene inicio ni fin: los cuatro íconos se mueven siempre.
+  // CICLO es la duración de una vuelta completa; está elegida para que todos
+  // los movimientos vuelvan a su estado inicial justo al terminar (así el GIF
+  // se puede repetir sin salto):
+  //   reloj: 1 vuelta cada 3 s · red: ida y vuelta cada 0.9 s ·
+  //   click: cada 1.8 s · promesa: cada 3 s   →   9 s es múltiplo de todos.
+  const CICLO = 9.0;
+
+  const tl = gsap.timeline({ paused: true, repeat: -1, defaults: { ease: EASE.suave } });
+  tl.addLabel('ciclo');
+
+  // Timers: la manecilla da vueltas (1 vuelta cada 3 s)
+  // Nota: en SVG el centro de giro se indica con svgOrigin (coordenadas del viewBox)
+  tl.fromTo('.manecilla', { rotation: 0 }, { rotation: 360 * (CICLO / 3), svgOrigin: '50 54', duration: CICLO, ease: 'none' }, 0);
+
+  // Network: las flechas van y vienen (0.45 s por tramo)
+  const tramos = Math.round(CICLO / 0.45);
+  tl.fromTo('.flecha-arriba', { y: 0 }, { y: -8, duration: 0.45, repeat: tramos - 1, yoyo: true, ease: 'sine.inOut' }, 0);
+  tl.fromTo('.flecha-abajo',  { y: 0 }, { y: 8,  duration: 0.45, repeat: tramos - 1, yoyo: true, ease: 'sine.inOut' }, 0);
+
+  // DOM/Events: el cursor hace click en el botón y sale una onda (cada 1.8 s)
+  for (let t = 0.4; t < CICLO; t += 1.8) {
+    tl.to('.cursor', { scale: 0.85, svgOrigin: '56 56', duration: 0.15, repeat: 1, yoyo: true, ease: 'power2.in' }, t);
+    tl.to('.boton', { fill: ACENTO, duration: 0.15, repeat: 1, yoyo: true }, t);
+    tl.fromTo('.onda', { scale: 0.4, opacity: 1, svgOrigin: '50 62' }, { scale: 3, opacity: 0, duration: 0.8, ease: 'power2.out' }, t + 0.15);
+  }
+
+  // Promises: espera (manecilla) y luego se resuelve (✓ dibujado), cada 3 s
+  for (let t = 0; t < CICLO; t += 3.0) {
+    tl.fromTo('.reloj-promesa', { rotation: 0, autoAlpha: 1, svgOrigin: '50 50' }, { rotation: 360, duration: 1.6, ease: 'none' }, t);
+    tl.to('.reloj-promesa', { autoAlpha: 0, duration: 0.2 }, t + 1.6);
+    tl.fromTo('.check-promesa', { strokeDashoffset: 60 }, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out' }, t + 1.7);
+    tl.to('.check-promesa', { strokeDashoffset: 60, duration: 0.3 }, t + 2.7);
+  }
+
+  configurarControles(tl);
+  configurarNavegacion();
+</script>
+</body>
+</html>

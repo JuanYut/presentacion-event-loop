@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>02 · JS es síncrono</title>
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* Cada "línea de código" es una fila: número a la izquierda y barras
+       abstractas (segmentos) que representan el código. Se colocan en
+       vertical según --i. */
+    .sinc__linea {
+      --i: 0;
+      position: absolute;
+      left: 120px;
+      right: 120px;
+      top: calc(270px + var(--i) * 120px);   /* 5 líneas centradas verticalmente */
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+    .sinc__num {
+      width: 60px;
+      text-align: right;
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--acento);
+      opacity: 0.35;              /* GSAP la sube cuando la línea se ejecuta */
+    }
+    .sinc__segs {
+      display: flex;
+      gap: 16px;
+    }
+    /* Segmento: contorno tenue; dentro, un relleno que crece de izq. a der. */
+    .sinc__seg {
+      position: relative;
+      height: 44px;
+      border: 3px solid var(--acento-suave);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .sinc__relleno {
+      position: absolute;
+      inset: 0;
+      background: var(--acento);
+      transform-origin: left center;
+      transform: scaleX(0);
+    }
+
+    /* Cursor: banda detrás de la línea que se está ejecutando */
+    .sinc__cursor {
+      position: absolute;
+      left: 80px;
+      right: 80px;
+      top: 256px;                 /* alineado con la línea 0; GSAP lo mueve con y */
+      height: 88px;
+      border-radius: 20px;
+      background: rgba(255, 234, 0, 0.08);
+      border-left: 6px solid var(--acento);
+      visibility: hidden;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stage stage--cuadrado stage--slide sinc">
+
+  <div class="sinc__cursor" id="cursor"></div>
+
+  <!-- Las líneas. El ancho de cada segmento (en px) va en style="width".
+       Agrega o quita líneas y segmentos libremente: la timeline se genera
+       recorriendo todas las .sinc__linea en orden. -->
+  <div class="sinc__linea" style="--i: 0">
+    <div class="sinc__num">1</div>
+    <div class="sinc__segs">
+      <div class="sinc__seg" style="width: 120px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 280px"><div class="sinc__relleno"></div></div>
+    </div>
+  </div>
+  <div class="sinc__linea" style="--i: 1">
+    <div class="sinc__num">2</div>
+    <div class="sinc__segs">
+      <div class="sinc__seg" style="width: 80px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 200px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 160px"><div class="sinc__relleno"></div></div>
+    </div>
+  </div>
+  <div class="sinc__linea" style="--i: 2">
+    <div class="sinc__num">3</div>
+    <div class="sinc__segs">
+      <div class="sinc__seg" style="width: 220px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 120px"><div class="sinc__relleno"></div></div>
+    </div>
+  </div>
+  <div class="sinc__linea" style="--i: 3">
+    <div class="sinc__num">4</div>
+    <div class="sinc__segs">
+      <div class="sinc__seg" style="width: 100px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 400px"><div class="sinc__relleno"></div></div>
+    </div>
+  </div>
+  <div class="sinc__linea" style="--i: 4">
+    <div class="sinc__num">5</div>
+    <div class="sinc__segs">
+      <div class="sinc__seg" style="width: 160px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 100px"><div class="sinc__relleno"></div></div>
+      <div class="sinc__seg" style="width: 240px"><div class="sinc__relleno"></div></div>
+    </div>
+  </div>
+
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<script src="../vendor/gsap.min.js"></script>
+<script src="../shared/controls.js"></script>
+<script>
+  const lineas = gsap.utils.toArray('.sinc__linea');
+  const cursor = document.getElementById('cursor');
+
+  // ---------- Medidas y tiempos de esta escena ----------
+  const ALTO_LINEA   = 120;   // separación vertical entre líneas (igual que en el CSS)
+  const T_POR_PIXEL  = 0.0022; // segundos de "ejecución" por píxel de segmento (~1 s por línea)
+  const OPACIDAD_HECHA = 0.4; // cómo queda una línea ya ejecutada
+
+  // ---------- Timeline ----------
+  const tl = gsap.timeline({
+    paused: true,
+    defaults: { duration: DUR.normal, ease: EASE.suave },
+  });
+
+  tl.addLabel('inicio');
+  esperar(tl, DUR.margen);
+
+  lineas.forEach((linea, i) => {
+    const num      = linea.querySelector('.sinc__num');
+    const rellenos = linea.querySelectorAll('.sinc__relleno');
+
+    // 1) El cursor baja a esta línea y su número se enciende
+    tl.addLabel(`linea-${i + 1}`);
+    tl.to(cursor, { y: i * ALTO_LINEA, autoAlpha: 1, duration: DUR.rapida, ease: EASE.mover });
+    tl.to(num, { opacity: 1, duration: DUR.rapida }, '<');
+
+    // 2) Se ejecuta: los segmentos se rellenan uno tras otro, de izquierda a derecha
+    rellenos.forEach((relleno) => {
+      const ancho = relleno.parentElement.offsetWidth;
+      tl.fromTo(relleno, { scaleX: 0 }, { scaleX: 1, duration: ancho * T_POR_PIXEL, ease: 'none' });
+    });
+
+    // 3) Hecha: la línea completa se atenúa y el foco pasa a la siguiente
+    esperar(tl, DUR.rapida);
+    tl.to(linea, { opacity: OPACIDAD_HECHA, duration: DUR.rapida });
+  });
+
+  // Fin: el cursor desaparece
+  tl.addLabel('fin');
+  tl.to(cursor, { autoAlpha: 0, duration: DUR.rapida });
+  esperar(tl, DUR.margen);
+
+  configurarControles(tl);
+  configurarNavegacion();
+</script>
+</body>
+</html>

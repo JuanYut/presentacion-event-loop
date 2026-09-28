@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>09 · Microtask Queue</title>
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* ---------- Disposición (misma escena que la 08) ----------
+       Arriba izquierda: Call Stack. Derecha: Event Loop con contador de ciclos.
+       Abajo: la Microtask Queue (Promises) y, debajo, una Macrotask esperando. */
+
+    .mi .slide__pila      { left: 80px; top: 150px; width: 320px; height: 330px; }
+    .mi .slide__pila-boca { left: 80px; top: 150px; width: 320px; }
+    .mi .slide__frame     { left: 100px; top: 394px; width: 280px; height: 70px; font-size: 24px; }
+    .mi .slide__hilo-punto { left: 420px; top: 415px; }
+
+    .mi .event-loop { left: 610px; top: 200px; width: 200px; height: 200px; }
+    .mi .event-loop__anillo { border-width: 9px; }
+    .ciclo {
+      position: absolute;
+      left: 610px;
+      top: 424px;
+      width: 200px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--acento);
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    /* Colas: microtasks arriba, macrotask abajo (GSAP desplaza las tareas con x) */
+    .cola-micro.slide__espera { left: 60px; top: 600px; width: 960px; height: 130px; }
+    .tarea-micro.slide__tarea { top: 625px; }
+    .cola-macro.slide__espera { left: 60px; top: 830px; width: 960px; height: 130px; }
+    .tarea-macro.slide__tarea { top: 855px; opacity: 0.45; }   /* espera su turno, atenuada */
+  </style>
+</head>
+<body>
+
+<div class="stage stage--cuadrado stage--slide mi">
+
+  <!-- Call Stack -->
+  <div class="slide__etiqueta" style="left: 80px; top: 500px;">Call Stack</div>
+  <div class="slide__pila"></div>
+  <div class="slide__pila-boca"></div>
+  <div class="slide__frame frame-micro"><span>.then cb</span></div>
+  <div class="slide__frame frame-micro"><span>.catch cb</span></div>
+  <div class="slide__frame frame-micro"><span>.finally cb</span></div>
+  <div class="slide__frame frame-micro"><span>.then cb</span></div>
+  <div class="slide__frame" id="frame-macro"><span>setTimeout cb</span></div>
+  <div class="slide__hilo-punto" id="hilo"></div>
+
+  <!-- Event Loop -->
+  <div class="event-loop" id="loop">
+    <div class="event-loop__anillo" id="anillo"></div>
+    <span class="event-loop__texto">Event<br>Loop</span>
+  </div>
+  <div class="ciclo">CICLO 1</div>
+  <div class="ciclo">CICLO 2</div>
+
+  <!-- Microtask Queue -->
+  <div class="slide__etiqueta" style="left: 80px; top: 560px;">Microtask Queue · todas por ciclo · prioridad alta</div>
+  <div class="slide__espera cola-micro"></div>
+  <div class="slide__tarea tarea-micro" style="left: 80px">.then</div>
+  <div class="slide__tarea tarea-micro" style="left: 266px">.catch</div>
+  <div class="slide__tarea tarea-micro" style="left: 452px">.finally</div>
+  <div class="slide__tarea tarea-micro" style="left: 638px">.then</div>
+
+  <!-- Macrotask Queue (espera a que la de arriba se vacíe) -->
+  <div class="slide__etiqueta" style="left: 80px; top: 790px;">Macrotask Queue · espera su turno</div>
+  <div class="slide__espera cola-macro"></div>
+  <div class="slide__tarea tarea-macro" id="tarea-macro" style="left: 80px">setTimeout</div>
+
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<script src="../vendor/gsap.min.js"></script>
+<script src="../shared/controls.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const stage = document.querySelector('.stage');
+  const ACENTO = getComputedStyle(stage).getPropertyValue('--acento').trim();
+  const FONDO  = getComputedStyle(stage).getPropertyValue('--fondo').trim();
+
+  const loop = $('loop'), anillo = $('anillo'), hilo = $('hilo');
+  const ciclos = gsap.utils.toArray('.ciclo');
+  const micros = gsap.utils.toArray('.tarea-micro');
+  const framesMicro = gsap.utils.toArray('.frame-micro');
+  const macro = $('tarea-macro'), frameMacro = $('frame-macro');
+
+  // ---------- Medidas y tiempos ----------
+  const PASO_COLA = 186;
+  const Y_BOCA    = -334;
+  // Del primer lugar de cada cola al centro del anillo y a la boca de la pila
+  const MICRO_A_ANILLO = { x: 545, y: -365 }, MICRO_A_BOCA = { x: 75, y: -565 };
+  const MACRO_A_ANILLO = { x: 545, y: -595 }, MACRO_A_BOCA = { x: 75, y: -795 };
+  const T_MOVER_MICRO = 0.55;  // las microtareas van rápido, una tras otra
+  const T_MOVER_MACRO = 0.9;
+  const T_CAMBIO      = 0.4;
+  const T_TRABAJO     = 0.5;
+  const T_RESPIRO     = 0.6;
+  const VUELTAS_POR_SEG = 0.4;
+
+  const tl = gsap.timeline({ paused: true, defaults: { duration: DUR.normal, ease: EASE.suave } });
+
+  // --- Helpers ---
+  const apilarFrame = (f, seg, pos) => tl.fromTo(f, { y: Y_BOCA, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: seg, ease: 'power3.out' }, pos);
+  const desapilarFrame = (f, seg, pos) => tl.to(f, { y: Y_BOCA, autoAlpha: 0, duration: seg, ease: 'power3.in' }, pos);
+  const activar = (f, pos) => tl.to(f, { backgroundColor: ACENTO, color: FONDO, duration: T_CAMBIO }, pos);
+  const mostrarCiclo = (n, pos) => {
+    tl.fromTo(ciclos[n - 1], { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: T_CAMBIO }, pos);
+    tl.to(loop, { scale: 1.1, duration: DUR.rapida, repeat: 1, yoyo: true, ease: 'sine.inOut' }, pos);
+  };
+  // Una tarea viaja de su cola al anillo, a la boca, entra al stack, se ejecuta y sale
+  function ejecutarTarea(tarea, frame, x0, aAnillo, aBoca, seg, pos) {
+    tl.to(tarea, { x: x0 + aAnillo.x, y: aAnillo.y, scale: 0.8, duration: seg, ease: EASE.mover }, pos);
+    tl.to(tarea, { x: x0 + aBoca.x, y: aBoca.y, duration: seg, ease: EASE.mover });
+    apilarFrame(frame, seg);
+    tl.to(tarea, { autoAlpha: 0, duration: T_CAMBIO }, '<');
+    tl.to(hilo, { autoAlpha: 1, duration: T_CAMBIO }, '<');
+    activar(frame, '<');
+    esperar(tl, T_TRABAJO);
+    desapilarFrame(frame, seg);
+    tl.to(hilo, { autoAlpha: 0, duration: T_CAMBIO }, '<');
+  }
+
+  tl.addLabel('inicio');
+  esperar(tl, DUR.margen);
+
+  // CICLO 1: el event loop vacía TODA la Microtask Queue antes de tocar la macrotarea
+  tl.addLabel('ciclo-1');
+  mostrarCiclo(1);
+  esperar(tl, 0.3);
+  micros.forEach((tarea, i) => {
+    tl.addLabel(`micro-${i + 1}`);
+    // Las que quedan avanzan un lugar mientras esta sale
+    const t = tl.duration();
+    micros.slice(i + 1).forEach((otra) => tl.to(otra, { x: -(i + 1) * PASO_COLA, duration: T_MOVER_MICRO, ease: EASE.mover }, t));
+    ejecutarTarea(tarea, framesMicro[i], -i * PASO_COLA, MICRO_A_ANILLO, MICRO_A_BOCA, T_MOVER_MICRO, t);
+  });
+  tl.to(ciclos[0], { autoAlpha: 0, duration: T_CAMBIO }, '<');
+  esperar(tl, T_RESPIRO);
+
+  // CICLO 2: ahora sí, la macrotarea (una por ciclo)
+  tl.addLabel('ciclo-2');
+  mostrarCiclo(2);
+  tl.to(macro, { opacity: 1, duration: T_CAMBIO }, '<');
+  esperar(tl, 0.3);
+  ejecutarTarea(macro, frameMacro, 0, MACRO_A_ANILLO, MACRO_A_BOCA, T_MOVER_MACRO);
+  tl.to(ciclos[1], { autoAlpha: 0, duration: T_CAMBIO }, '<');
+
+  tl.addLabel('fin');
+  esperar(tl, DUR.margen);
+
+  const total = tl.duration();
+  tl.fromTo(anillo, { rotation: 0 }, { rotation: 360 * Math.round(total * VUELTAS_POR_SEG), duration: total, ease: 'none' }, 0);
+
+  configurarControles(tl);
+  configurarNavegacion();
+</script>
+</body>
+</html>

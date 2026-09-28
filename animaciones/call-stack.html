@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Call Stack</title>
+  <!-- Fuentes (opcional: si no hay internet se usan las del sistema) -->
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="shared/styles.css">
+</head>
+<body>
+
+<div class="stage">
+
+  <header class="titulo">
+    <span>Call Stack: funciones anidadas</span>
+  </header>
+
+  <main class="escena">
+
+    <!-- ===== Izquierda: código de ejemplo ===== -->
+    <section class="panel">
+      <div class="panel__titulo">Código</div>
+      <div class="panel__cuerpo">
+<pre class="codigo"><span class="codigo__resaltado"></span><span class="linea"><span class="kw">function</span> <span class="fn">formatear</span>(nombre) {</span>
+<span class="linea">  <span class="kw">return</span> nombre.<span class="fn">toUpperCase</span>();</span>
+<span class="linea">}</span>
+<span class="linea"></span>
+<span class="linea"><span class="kw">function</span> <span class="fn">saludar</span>(nombre) {</span>
+<span class="linea">  <span class="kw">const</span> texto = <span class="fn">formatear</span>(nombre);</span>
+<span class="linea">  console.<span class="fn">log</span>(<span class="str">"Hola, "</span> + texto);</span>
+<span class="linea">}</span>
+<span class="linea"></span>
+<span class="linea"><span class="kw">function</span> <span class="fn">main</span>() {</span>
+<span class="linea">  console.<span class="fn">log</span>(<span class="str">"Inicio"</span>);</span>
+<span class="linea">  <span class="fn">saludar</span>(<span class="str">"Ana"</span>);</span>
+<span class="linea">  console.<span class="fn">log</span>(<span class="str">"Fin"</span>);</span>
+<span class="linea">}</span>
+<span class="linea"></span>
+<span class="linea"><span class="fn">main</span>();</span></pre>
+      </div>
+    </section>
+
+    <!-- ===== Derecha: runtime ===== -->
+    <div class="runtime" style="grid-template-rows: 1fr 300px;">
+
+      <!-- Call Stack: cada frame tiene --i con su posición (0 = fondo) -->
+      <section class="panel panel--stack">
+        <div class="panel__titulo">Call Stack</div>
+        <div class="panel__cuerpo">
+          <div class="frame" id="f-main"        style="--i: 0">main()</div>
+          <div class="frame" id="f-log-inicio"  style="--i: 1">console.log("Inicio")</div>
+          <div class="frame" id="f-saludar"     style="--i: 1">saludar("Ana")</div>
+          <div class="frame" id="f-formatear"   style="--i: 2">formatear("Ana")</div>
+          <div class="frame" id="f-log-hola"    style="--i: 2">console.log("Hola, ANA")</div>
+          <div class="frame" id="f-log-fin"     style="--i: 1">console.log("Fin")</div>
+        </div>
+      </section>
+
+      <!-- Consola: las líneas aparecen en orden -->
+      <section class="panel panel--consola">
+        <div class="panel__titulo">Consola</div>
+        <div class="panel__cuerpo consola">
+          <div class="consola__linea" id="c-inicio">Inicio</div>
+          <div class="consola__linea" id="c-hola">Hola, ANA</div>
+          <div class="consola__linea" id="c-fin">Fin</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Ayuda de teclado (oculta; se muestra con H) -->
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<!-- GSAP 3 con versión fija -->
+<script src="../vendor/gsap.min.js"></script>
+<script src="shared/controls.js"></script>
+<script>
+  // Atajo para seleccionar elementos por id
+  const $ = (id) => document.getElementById(id);
+
+  // ---------- Timeline principal ----------
+  // Arranca en pausa; configurarControles la conecta al teclado.
+  const tl = gsap.timeline({
+    paused: true,
+    defaults: { duration: DUR.normal, ease: EASE.suave },
+  });
+
+  // Cada paso lleva un label para poder saltar con las flechas.
+  // Patrón de un paso: resaltar línea → animar el runtime → pausa para leer.
+
+  tl.addLabel('inicio');
+  esperar(tl, DUR.margen);                       // 1 s de silencio para recortar
+
+  // main() entra al stack
+  tl.addLabel('llamar-main');
+  resaltarLinea(tl, 16);
+  apilar(tl, $('f-main'));
+  esperar(tl);
+
+  // console.log("Inicio")
+  tl.addLabel('log-inicio');
+  resaltarLinea(tl, 11);
+  apilar(tl, $('f-log-inicio'));
+  imprimir(tl, $('c-inicio'));
+  desapilar(tl, $('f-log-inicio'));
+  esperar(tl);
+
+  // saludar("Ana") entra al stack
+  tl.addLabel('llamar-saludar');
+  resaltarLinea(tl, 12);
+  esperar(tl, DUR.rapida);
+  resaltarLinea(tl, 5);
+  apilar(tl, $('f-saludar'));
+  esperar(tl);
+
+  // formatear("Ana") entra al stack
+  tl.addLabel('llamar-formatear');
+  resaltarLinea(tl, 6);
+  esperar(tl, DUR.rapida);
+  resaltarLinea(tl, 1);
+  apilar(tl, $('f-formatear'));
+  esperar(tl);
+
+  // formatear retorna y sale del stack
+  tl.addLabel('retorno-formatear');
+  resaltarLinea(tl, 2);
+  esperar(tl, DUR.rapida);
+  desapilar(tl, $('f-formatear'));
+  resaltarLinea(tl, 6, '<');                     // vuelve a la línea que llamó
+  esperar(tl);
+
+  // console.log("Hola, ANA")
+  tl.addLabel('log-hola');
+  resaltarLinea(tl, 7);
+  apilar(tl, $('f-log-hola'));
+  imprimir(tl, $('c-hola'));
+  desapilar(tl, $('f-log-hola'));
+  esperar(tl);
+
+  // saludar termina y sale del stack
+  tl.addLabel('retorno-saludar');
+  resaltarLinea(tl, 8);
+  esperar(tl, DUR.rapida);
+  desapilar(tl, $('f-saludar'));
+  resaltarLinea(tl, 12, '<');
+  esperar(tl);
+
+  // console.log("Fin")
+  tl.addLabel('log-fin');
+  resaltarLinea(tl, 13);
+  apilar(tl, $('f-log-fin'));
+  imprimir(tl, $('c-fin'));
+  desapilar(tl, $('f-log-fin'));
+  esperar(tl);
+
+  // main termina: el stack queda vacío
+  tl.addLabel('retorno-main');
+  resaltarLinea(tl, 14);
+  esperar(tl, DUR.rapida);
+  desapilar(tl, $('f-main'));
+  resaltarLinea(tl, null, '<');                  // oculta el resaltado
+  esperar(tl);
+
+  tl.addLabel('fin');
+  esperar(tl, DUR.margen);                       // 1 s de silencio final
+
+  configurarControles(tl);
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>03 · Event Loop y callbacks</title>
+  <link rel="stylesheet" href="../vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* ---------- Disposición de la escena ----------
+       Arriba: el hilo (slot) y la fila de instrucciones.
+       Centro: el anillo del event loop.
+       Abajo: la zona de espera de los callbacks. */
+
+    /* Vía por la que pasan las instrucciones */
+    .async__via {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 299px;
+      height: 2px;
+      background: repeating-linear-gradient(90deg,
+        var(--acento-suave) 0 24px, transparent 24px 40px);
+    }
+
+    /* Slot centrado en (540, 300); más ancho que alto para que quepa la instrucción 1 */
+    .async .slide__slot { left: 380px; top: 180px; width: 320px; height: 240px; }
+
+    /* Instrucciones: parten centradas en el slot, GSAP las mueve con `x` */
+    .async .slide__bloque { left: 475px; top: 235px; }
+
+    /* La instrucción 1 es más ancha: lleva el número y un hueco donde va el
+       callback que se le "pasa". Cuando el callback se va, el hueco queda vacío. */
+    .async .slide__bloque--con-callback {
+      left: 410px;
+      width: 260px;
+      padding-right: 20px;
+      grid-template-columns: 130px 1fr;
+      place-items: center end;    /* el hueco queda pegado a la derecha */
+    }
+    .async__hueco {
+      width: 100px;
+      height: 100px;
+      border: 4px dashed rgba(30, 30, 30, 0.45);
+      border-radius: 18px;
+    }
+
+    /* Posición del callback (parte encajado en el hueco de la instrucción 1)
+       y de la zona de espera (centrada en 540, 825) */
+    .async__callback { left: 550px; top: 250px; }
+    .async__espera   { left: 340px; top: 740px; width: 400px; height: 170px; }
+
+    /* Anillo de progreso de la tarea lenta (timer, red...), en la esquina del CB */
+    .async__timer {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 48px;
+      height: 48px;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .async__timer-fondo { fill: var(--fondo); stroke: var(--acento-suave); }
+    .async__timer-arco  { fill: none; stroke: var(--acento); stroke-linecap: round; }
+
+    /* Anillo del event loop, centrado en (540, 545) */
+    .async .event-loop { left: 480px; top: 485px; }
+
+  </style>
+</head>
+<body>
+
+<div class="stage stage--cuadrado stage--slide async">
+
+  <div class="async__via"></div>
+
+  <div class="slide__slot" id="slot">
+    <div class="slide__progreso" id="progreso"></div>
+  </div>
+
+  <!-- Instrucciones síncronas -->
+  <div class="slide__bloque slide__bloque--con-callback" id="b1">
+    <span>1</span>
+    <div class="async__hueco"></div>
+  </div>
+  <div class="slide__bloque" id="b2">2</div>
+  <div class="slide__bloque" id="b3">3</div>
+
+  <!-- El callback (se dibuja después para quedar encima de la instrucción 1) -->
+  <div class="slide__callback async__callback" id="cb">
+    <span class="slide__callback-titulo">CB</span>
+    <span class="slide__callback-sub">Callback</span>
+    <!-- Círculo de 15px de radio: perímetro 2·π·15 ≈ 94.25 (= stroke-dasharray) -->
+    <svg class="async__timer" viewBox="0 0 40 40">
+      <circle class="async__timer-fondo" cx="20" cy="20" r="15" stroke-width="5"/>
+      <circle class="async__timer-arco" id="arco" cx="20" cy="20" r="15" stroke-width="5"
+              stroke-dasharray="94.25" stroke-dashoffset="94.25" transform="rotate(-90 20 20)"/>
+    </svg>
+  </div>
+
+  <div class="event-loop">
+    <div class="event-loop__anillo" id="anillo"></div>
+  </div>
+
+  <div class="slide__espera async__espera"></div>
+
+  <div class="ayuda oculto">
+    <div class="ayuda__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>Espacio</kbd></td><td>Play / pausa</td></tr>
+        <tr><td><kbd>R</kbd></td><td>Volver al inicio</td></tr>
+        <tr><td><kbd>→</kbd> <kbd>←</kbd></td><td>Siguiente / anterior paso</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="pista">Espacio para empezar · H ayuda</div>
+
+</div>
+
+<script src="../vendor/gsap.min.js"></script>
+<script src="../shared/controls.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const stage = document.querySelector('.stage');
+  const slot = $('slot'), progreso = $('progreso'), anillo = $('anillo');
+  const b1 = $('b1'), b2 = $('b2'), b3 = $('b3'), cb = $('cb');
+  const timer = cb.querySelector('.async__timer'), arco = $('arco');
+
+  // Colores leídos del CSS (GSAP necesita el valor literal para animar el borde)
+  const ACENTO       = getComputedStyle(stage).getPropertyValue('--acento').trim();
+  const ACENTO_SUAVE = getComputedStyle(stage).getPropertyValue('--acento-suave').trim();
+
+  // ---------- Medidas y tiempos de esta escena ----------
+  // Desplazamientos en x respecto a la posición "dentro del slot" (x = 0).
+  const X_ESPERA_1 = -255;  // primer lugar de la fila, pegado al slot
+  const X_ESPERA_2 = -415;  // segundo lugar
+  const X_SALIDA   = 700;   // fuera del cuadrado, por la derecha
+  // Posiciones iniciales (la instrucción 1 es más ancha, por eso difieren)
+  const X_INICIO   = { b1: -320, b2: -545, b3: -705 };
+  const X_TRAS_B1  = { b2: -225, b3: -385 };   // fila cuando la 1 está en el slot
+  // El callback: cae a la zona de espera y luego sube al slot
+  const CB_ESPERA  = { x: -60, y: 525 };
+  const CB_SLOT    = { x: -60, y: 0 };
+  const T_EJECUTA  = 0.9;   // segundos que tarda cada instrucción
+  const T_TAREA    = 2.6;   // segundos que tarda la tarea lenta del callback (anillo)
+  const VUELTAS_POR_SEG = 0.5; // velocidad del anillo del event loop
+
+  // Estado inicial: fila a la izquierda, callback encajado en la instrucción 1
+  gsap.set(b1, { x: X_INICIO.b1 });
+  gsap.set(cb, { x: X_INICIO.b1 });
+  gsap.set(b2, { x: X_INICIO.b2 });
+  gsap.set(b3, { x: X_INICIO.b3 });
+
+  // ---------- Timeline ----------
+  const tl = gsap.timeline({
+    paused: true,
+    defaults: { duration: DUR.normal, ease: EASE.suave },
+  });
+
+  // Ejecuta `el` en el slot: lo enciende, llena la barra, lo apaga y saca el
+  // bloque por la derecha. Devuelve el tiempo en que empieza la ejecución,
+  // por si algo debe ocurrir "mientras tanto" (se usa como posición absoluta).
+  function ejecutar(el, duracion = T_EJECUTA) {
+    const inicio = tl.duration();
+    tl.to(slot, { borderColor: ACENTO, duration: DUR.rapida }, inicio);
+    tl.fromTo(progreso, { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: duracion, ease: 'none' }, inicio);
+    const fin = inicio + duracion;
+    tl.to(progreso, { autoAlpha: 0, duration: DUR.rapida }, fin);
+    tl.to(slot, { borderColor: ACENTO_SUAVE, duration: DUR.rapida }, fin);
+    tl.to(el, { x: X_SALIDA, autoAlpha: 0, duration: DUR.normal, ease: EASE.salida }, fin);
+    return inicio;
+  }
+  // Un bloque se desplaza a otro lugar de la fila
+  const mover = (el, x, pos) => tl.to(el, { x, duration: DUR.lenta, ease: EASE.mover }, pos);
+
+  tl.addLabel('inicio');
+  esperar(tl, DUR.margen);
+
+  // 1) La instrucción 1 (con su callback) entra al slot
+  tl.addLabel('instruccion-1');
+  mover(b1, 0);
+  mover(cb, 0, '<');
+  mover(b2, X_TRAS_B1.b2, '<');
+  mover(b3, X_TRAS_B1.b3, '<');
+  const t1 = ejecutar(b1);
+
+  // Mientras se ejecuta, el callback se desprende y cae a la zona de espera.
+  // Al caer queda "pendiente": contorno punteado y un anillo que se llena
+  // mientras la tarea lenta (timer, petición...) está en curso.
+  tl.addLabel('callback-espera', t1 + 0.3);
+  tl.to(cb, { ...CB_ESPERA, duration: DUR.lenta, ease: EASE.mover }, t1 + 0.3);
+  const tCae = t1 + 0.3 + DUR.lenta;
+
+  // 2) y 3) El hilo sigue con las instrucciones síncronas sin bloquearse
+  tl.addLabel('instruccion-2');
+  mover(b2, 0);
+  mover(b3, X_ESPERA_1, '<');
+  ejecutar(b2);
+
+  tl.addLabel('instruccion-3');
+  mover(b3, 0);
+  ejecutar(b3);
+
+  // El anillo de la tarea lenta corre en paralelo a las instrucciones 2 y 3.
+  // (Se agrega aquí, con posición absoluta, para que su duración no empuje
+  // lo que se anexa al final de la timeline.)
+  tl.set(cb, { borderStyle: 'dashed' }, tCae);
+  tl.to(timer, { autoAlpha: 1, duration: DUR.rapida }, tCae);
+  tl.fromTo(arco, { strokeDashoffset: 94.25 }, { strokeDashoffset: 0, duration: T_TAREA, ease: 'none' }, tCae);
+
+  // La tarea lenta termina: el callback queda listo (contorno sólido, pequeño
+  // salto) y ahora sí espera a que el hilo se libere.
+  const tListo = tCae + T_TAREA;
+  tl.addLabel('callback-listo', tListo);
+  tl.to(timer, { autoAlpha: 0, duration: DUR.rapida }, tListo);
+  tl.set(cb, { borderStyle: 'solid' }, tListo);
+  tl.to(cb, { scale: 1.15, duration: DUR.rapida, repeat: 1, yoyo: true, ease: 'sine.inOut' }, tListo);
+
+  // 4) Hilo libre: el event loop lo nota (el anillo late)
+  tl.addLabel('hilo-libre');
+  esperar(tl, DUR.pausa);
+  tl.to(anillo, { scale: 1.2, duration: DUR.rapida, repeat: 1, yoyo: true, ease: 'sine.inOut' });
+
+  // 5) El callback sube atravesando el anillo, entra al slot y se ejecuta
+  tl.addLabel('callback-ejecuta');
+  tl.to(cb, { ...CB_SLOT, duration: DUR.lenta, ease: EASE.mover });
+  ejecutar(cb);
+
+  // Entre "listo" y "ejecuta", el callback palpita esperando. Se calcula
+  // cuántos ciclos caben para que termine justo antes de subir al hilo.
+  const tEjecuta = tl.labels['callback-ejecuta'];
+  const ciclos = Math.floor((tEjecuta - tListo - DUR.rapida * 2) / 0.7);
+  if (ciclos > 0) {
+    tl.to(cb, { opacity: 0.45, duration: 0.35, repeat: ciclos * 2 - 1, yoyo: true, ease: 'sine.inOut' },
+      tListo + DUR.rapida * 2);
+  }
+
+  tl.addLabel('fin');
+  esperar(tl, DUR.margen);
+
+  // El anillo gira durante toda la timeline (duración finita, para que las
+  // flechas y R sigan funcionando)
+  const total = tl.duration();
+  tl.to(anillo, { rotation: 360 * Math.round(total * VUELTAS_POR_SEG), duration: total, ease: 'none' }, 0);
+
+  configurarControles(tl);
+  configurarNavegacion();
+</script>
+</body>
+</html>

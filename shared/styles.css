@@ -1,0 +1,596 @@
+/* ============================================================
+   shared/styles.css
+   Estilos comunes para todas las animaciones del Event Loop.
+
+   Secciones:
+     1. Variables (paleta, tipografía, medidas)  ← cambia colores aquí
+     2. Escenario 1920x1080 escalable
+     3. Panel de código (izquierda)
+     4. Paneles del runtime (Call Stack, Web APIs, colas, consola)
+     5. Event loop (ícono circular)
+     6. Ayuda de teclado y pista
+     7. Página índice
+   ============================================================ */
+
+/* ---------- 1. Variables ---------- */
+:root {
+  /* Fondos y texto */
+  --bg-exterior: #07080c;      /* fuera del escenario */
+  --bg-escenario: #0f1117;     /* fondo del escenario 16:9 */
+  --bg-panel: #161a23;
+  --borde-panel: #262b38;
+  --texto: #e8eaf0;
+  --texto-suave: #8b93a7;
+
+  /* Colores por componente del runtime (consistentes en todas las animaciones) */
+  --color-stack: #f5a524;      /* Call Stack ........ ámbar    */
+  --color-webapi: #4f8cff;     /* Web APIs .......... azul     */
+  --color-micro: #b56bff;      /* Microtask Queue ... violeta  */
+  --color-macro: #ff5d8f;      /* Callback/Macrotask  rosa     */
+  --color-consola: #2dd4bf;    /* Consola ........... turquesa */
+  --color-loop: #ffffff;       /* Event loop ........ blanco   */
+
+  /* Resaltado de sintaxis del código */
+  --sx-keyword: #c792ea;
+  --sx-funcion: #82aaff;
+  --sx-string: #c3e88d;
+  --sx-numero: #f78c6c;
+  --sx-comentario: #5c6370;
+
+  /* Tipografía */
+  --fuente-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
+
+  /* Medidas */
+  --alto-linea: 46px;          /* alto de cada línea de código (caben 16 líneas) */
+  --alto-frame: 72px;          /* alto de un frame en el stack */
+  --gap-frame: 12px;           /* separación entre frames */
+  --ancho-item: 300px;         /* ancho de un item en las colas */
+  --gap-item: 16px;
+  --radio: 16px;
+  --padding-panel: 24px;
+}
+
+/* ---------- 2. Escenario ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg-exterior);
+  color: var(--texto);
+  font-family: var(--fuente-ui);
+  overflow: hidden;
+}
+
+/* Contenedor fijo de 1920x1080; controls.js lo escala con transform para
+   que quepa en la ventana manteniendo 16:9. */
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  background: var(--bg-escenario);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 32px;
+  padding: 56px 64px;
+}
+
+/* Variante cuadrada (1080x1080) para animaciones que van dentro de una slide.
+   Sin grid ni padding: cada escena coloca sus elementos en absoluto. */
+.stage--cuadrado {
+  width: 1080px;
+  height: 1080px;
+  display: block;
+  padding: 0;
+}
+
+/* Colores de las animaciones de la presentación: la slide tiene fondo #FFEA00
+   y texto #1E1E1E, aquí se invierten para que el cuadrado contraste. */
+.stage--slide {
+  --fondo: #1E1E1E;
+  --acento: #FFEA00;
+  --acento-suave: rgba(255, 234, 0, 0.25);
+  background: var(--fondo);
+  font-family: var(--fuente-codigo);
+}
+
+/* Tema slide aplicado al formato "código + paneles" (escenario 1920x1080):
+   todos los paneles en amarillo sobre negro, con texto claro para el código. */
+.stage--slide { color: #f2f2f2; }
+.stage--slide .titulo__numero { color: var(--acento); border-color: var(--acento-suave); }
+.stage--slide .panel { --c: var(--acento); background: transparent; border-color: var(--acento-suave); }
+.stage--slide .panel__titulo { border-bottom-color: var(--acento-suave); }
+.stage--slide .codigo__resaltado { background: rgba(255, 234, 0, 0.12); border-left-color: var(--acento); }
+.stage--slide .linea::before { color: var(--acento); }
+.stage--slide .kw  { color: var(--acento); }
+.stage--slide .fn  { color: #ffffff; }
+.stage--slide .str { color: rgba(255, 234, 0, 0.8); }
+.stage--slide .num { color: rgba(255, 234, 0, 0.8); }
+.stage--slide .cm  { color: rgba(255, 255, 255, 0.35); }
+.stage--slide .frame, .stage--slide .item { --c: var(--acento); color: var(--acento); background: rgba(255, 234, 0, 0.1); }
+.stage--slide .consola__linea::before { color: var(--acento); }
+
+/* Componentes de las animaciones de slides (posición: cada escena) */
+
+/* El hilo: zona donde se ejecuta una instrucción a la vez */
+.slide__slot {
+  position: absolute;
+  border: 4px solid var(--acento-suave);
+  border-radius: 32px;
+  background: var(--fondo);
+}
+/* Barra de progreso de la instrucción en ejecución */
+.slide__progreso {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: 24px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--acento);
+  transform-origin: left center;
+  transform: scaleX(0);
+  visibility: hidden;
+  opacity: 0;
+}
+/* Instrucción: cuadrado amarillo con número oscuro */
+.slide__bloque {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: var(--acento);
+  color: var(--fondo);
+  font-size: 56px;
+  font-weight: 700;
+}
+/* Callback: "CB" con contorno, para distinguirlo de las instrucciones */
+.slide__callback {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  border: 4px solid var(--acento);
+  border-radius: 18px;
+  background: var(--fondo);
+  color: var(--acento);
+}
+.slide__callback-titulo { font-size: 38px; font-weight: 700; line-height: 1; }
+.slide__callback-sub    { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; opacity: 0.8; }
+/* Tarea en una cola (macrotask / microtask): caja con el nombre de la API */
+.slide__tarea {
+  position: absolute;
+  width: 170px;
+  height: 80px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--acento);
+  border-radius: 16px;
+  background: var(--fondo);
+  color: var(--acento);
+  font-size: 20px;
+  font-weight: 700;
+}
+/* Zona de espera de callbacks (punteada) */
+.slide__espera {
+  position: absolute;
+  border: 3px dashed var(--acento-suave);
+  border-radius: 28px;
+}
+/* Anillo de progreso (SVG de 40x40, círculo r=15 → perímetro 94.25).
+   Toma el color del texto del elemento que lo contiene. */
+.slide__anillo-fondo { fill: none; stroke: currentColor; opacity: 0.25; }
+.slide__anillo-arco  { fill: none; stroke: currentColor; stroke-linecap: round; }
+/* Call Stack: contenedor abierto por arriba (por ahí entran y salen los frames) */
+.slide__pila {
+  position: absolute;
+  border: 4px solid var(--acento-suave);
+  border-top: none;
+  border-radius: 0 0 32px 32px;
+}
+/* Marca punteada de la boca de la pila */
+.slide__pila-boca {
+  position: absolute;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    var(--acento-suave) 0 16px, transparent 16px 32px);
+}
+/* Frame: una función en la pila. Contorno = pausada; relleno = la que el hilo ejecuta */
+.slide__frame {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border: 3px solid var(--acento);
+  border-radius: 16px;
+  background: var(--fondo);
+  color: var(--acento);
+  font-weight: 700;
+  visibility: hidden;
+  opacity: 0;
+}
+.slide__frame svg { width: 48px; height: 48px; }
+/* El hilo: punto brillante que señala el frame que se está ejecutando */
+.slide__hilo-punto {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--acento);
+  box-shadow: 0 0 24px var(--acento);
+  visibility: hidden;
+  opacity: 0;
+}
+/* Etiqueta discreta para nombrar cada zona (posición: cada escena) */
+.slide__etiqueta {
+  position: absolute;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acento);
+  opacity: 0.6;
+}
+/* Anillo del event loop en tema slide (el texto del centro no gira) */
+.stage--slide .event-loop__anillo {
+  border-color: var(--acento-suave);
+  border-top-color: var(--acento);
+}
+.stage--slide .event-loop__texto {
+  position: relative;
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  color: var(--acento);
+}
+
+/* Título superior de la escena */
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.titulo__numero {
+  font-family: var(--fuente-codigo);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--texto-suave);
+  border: 2px solid var(--borde-panel);
+  border-radius: 999px;
+  padding: 6px 16px;
+}
+
+/* Distribución: código a la izquierda, runtime a la derecha */
+.escena {
+  display: grid;
+  grid-template-columns: 780px 1fr;
+  gap: 48px;
+  min-height: 0;
+}
+
+/* Columna derecha: apila paneles verticalmente */
+.runtime {
+  display: grid;
+  gap: 32px;
+  min-height: 0;
+}
+
+/* ---------- 3. Panel de código ---------- */
+.panel {
+  --c: var(--texto-suave);     /* color de acento del panel (se sobreescribe) */
+  background: var(--bg-panel);
+  border: 2px solid var(--borde-panel);
+  border-radius: var(--radio);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.panel__titulo {
+  padding: 18px var(--padding-panel);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c);
+  border-bottom: 2px solid var(--borde-panel);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.panel__titulo::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 16px var(--c);
+}
+.panel__cuerpo {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: var(--padding-panel);
+}
+
+.codigo {
+  position: relative;
+  margin: 0;
+  font-family: var(--fuente-codigo);
+  font-size: 28px;
+  line-height: var(--alto-linea);
+  counter-reset: linea;
+  white-space: normal;   /* los saltos de línea del HTML no cuentan */
+}
+/* Barra que resalta la línea en ejecución (la mueve GSAP con `y`) */
+.codigo__resaltado {
+  display: block;
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  top: 0;
+  height: var(--alto-linea);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-stack) 16%, transparent);
+  border-left: 5px solid var(--color-stack);
+  visibility: hidden;
+  opacity: 0;
+}
+.linea {
+  display: block;
+  position: relative;
+  min-height: var(--alto-linea);   /* las líneas vacías conservan su alto */
+  padding-left: 84px;
+  white-space: pre;                /* conserva la indentación */
+}
+.linea::before {
+  counter-increment: linea;
+  content: counter(linea);
+  position: absolute;
+  left: 0;
+  width: 48px;
+  text-align: right;
+  color: var(--texto-suave);
+  opacity: 0.6;
+}
+/* Tokens de sintaxis */
+.kw  { color: var(--sx-keyword); }
+.fn  { color: var(--sx-funcion); }
+.str { color: var(--sx-string); }
+.num { color: var(--sx-numero); }
+.cm  { color: var(--sx-comentario); font-style: italic; }
+
+/* ---------- 4. Paneles del runtime ---------- */
+.panel--stack   { --c: var(--color-stack); }
+.panel--webapi  { --c: var(--color-webapi); }
+.panel--micro   { --c: var(--color-micro); }
+.panel--macro   { --c: var(--color-macro); }
+.panel--consola { --c: var(--color-consola); }
+
+/* Frames del Call Stack: se apilan de abajo hacia arriba según --i */
+.frame {
+  --c: var(--color-stack);
+  position: absolute;
+  left: var(--padding-panel);
+  right: var(--padding-panel);
+  bottom: calc(var(--padding-panel) + var(--i, 0) * (var(--alto-frame) + var(--gap-frame)));
+  height: var(--alto-frame);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  font-family: var(--fuente-codigo);
+  font-size: 28px;
+  color: var(--texto);
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+  border: 2px solid var(--c);
+  border-radius: 12px;
+  visibility: hidden;   /* GSAP lo muestra con autoAlpha */
+  opacity: 0;
+}
+
+/* Items de Web APIs y colas: se colocan de izquierda a derecha según --i */
+.item {
+  --c: var(--color-macro);
+  position: absolute;
+  left: calc(var(--padding-panel) + var(--i, 0) * (var(--ancho-item) + var(--gap-item)));
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--ancho-item);
+  height: var(--alto-frame);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-family: var(--fuente-codigo);
+  font-size: 26px;
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+  border: 2px solid var(--c);
+  border-radius: 12px;
+  visibility: hidden;
+  opacity: 0;
+}
+.item--webapi { --c: var(--color-webapi); }
+.item--micro  { --c: var(--color-micro); }
+.item--macro  { --c: var(--color-macro); }
+
+/* Temporizador visual dentro de un item de Web APIs */
+.temporizador {
+  font-size: 22px;
+  color: var(--c);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Consola: líneas en flujo normal, ocultas hasta que GSAP las muestre */
+.consola {
+  font-family: var(--fuente-codigo);
+  font-size: 28px;
+  line-height: 1.9;
+}
+.consola__linea {
+  display: flex;
+  gap: 16px;
+  visibility: hidden;
+  opacity: 0;
+}
+.consola__linea::before {
+  content: '>';
+  color: var(--color-consola);
+  opacity: 0.7;
+}
+
+/* ---------- 5. Event loop ---------- */
+.event-loop {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.event-loop__anillo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid var(--borde-panel);
+  border-top-color: var(--color-loop);
+}
+
+/* ---------- 6. Ayuda de teclado y pista ---------- */
+.ayuda {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 8, 12, 0.8);
+  backdrop-filter: blur(6px);
+}
+.ayuda.oculto { display: none; }
+.ayuda__tarjeta {
+  background: var(--bg-panel);
+  border: 2px solid var(--borde-panel);
+  border-radius: var(--radio);
+  padding: 40px 56px;
+  min-width: 620px;
+}
+.ayuda__tarjeta h2 { margin: 0 0 24px; font-size: 32px; }
+.ayuda__tarjeta table { border-collapse: collapse; font-size: 24px; }
+.ayuda__tarjeta td { padding: 10px 24px 10px 0; }
+.ayuda__tarjeta kbd {
+  font-family: var(--fuente-codigo);
+  font-size: 20px;
+  padding: 6px 14px;
+  border: 2px solid var(--borde-panel);
+  border-bottom-width: 4px;
+  border-radius: 8px;
+  background: var(--bg-escenario);
+}
+
+/* Pista discreta que desaparece al pulsar Espacio por primera vez */
+.pista {
+  position: absolute;
+  right: 32px;
+  bottom: 24px;
+  font-size: 18px;
+  color: var(--texto-suave);
+  opacity: 0.6;
+}
+.pista.oculto { display: none; }
+
+/* ---------- 7. Navegación entre animaciones ---------- */
+.animacion-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding: 12px 24px;
+  background: rgba(7, 8, 12, 0.85);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.animacion-nav__contenedor {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.animacion-nav__boton {
+  display: inline-block;
+  padding: 8px 20px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--fuente-ui);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.animacion-nav__boton:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.animacion-nav__numero {
+  font-family: var(--fuente-codigo);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  min-width: 44px;
+  text-align: center;
+}
+
+/* ---------- 8. Página índice ---------- */
+body.pagina-indice { overflow: auto; }
+.indice {
+  max-width: 720px;
+  margin: 12vh auto;
+  padding: 0 24px;
+}
+.indice h1 { font-size: 40px; margin-bottom: 8px; }
+.indice p  { color: var(--texto-suave); margin-top: 0; }
+.indice ol { list-style: none; padding: 0; display: grid; gap: 12px; }
+.indice a {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--bg-panel);
+  border: 2px solid var(--borde-panel);
+  border-left: 6px solid var(--c);
+  border-radius: 12px;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.indice a:hover { border-color: var(--c); transform: translateX(4px); }
+.indice a code { font-family: var(--fuente-codigo); color: var(--texto-suave); font-size: 16px; }
+.indice h2 { font-size: 20px; color: var(--texto-suave); margin: 40px 0 12px; }
+/* Fila compacta de enlaces secundarios */
+.indice__fila { display: flex; flex-wrap: wrap; gap: 12px; }
+.indice__fila a { padding: 12px 18px; font-size: 16px; }
+.indice__fila a:hover { transform: none; }

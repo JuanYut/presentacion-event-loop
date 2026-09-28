@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El Event Loop de JavaScript · Presentación</title>
+  <link rel="stylesheet" href="vendor/fuentes/fuentes.css">
+  <link rel="stylesheet" href="css/deck.css">
+</head>
+<body>
+
+<!--
+  ESTRUCTURA
+  Cada <section class="slide"> es una slide, en orden de aparición. Para agregar,
+  quitar o reordenar slides basta mover bloques aquí: deck.js las recoge con
+  querySelectorAll y el contador y la barra de progreso se ajustan solos.
+
+  Las animaciones se embeben con data-src (no src) para que deck.js las cargue
+  solo cuando toca. Usa class="animacion" para las cuadradas (1080x1080) y
+  class="animacion animacion--ancha" para las de 16:9.
+-->
+
+<div class="deck">
+
+  <!-- ===== 1. Portada ===== -->
+  <section class="slide slide--portada activa">
+    <p class="slide__kicker">JavaScript · Asincronía</p>
+    <h1 class="slide__titulo">El Event Loop</h1>
+    <p class="slide__subtitulo">Cómo JavaScript hace varias cosas<br>con un solo hilo</p>
+  </section>
+
+  <!-- ===== 2. JS es single-threaded ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">01</p>
+        <h2 class="slide__titulo">JavaScript es single-threaded</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/01-single-thread.html"
+            title="Animación: un solo hilo ejecuta una instrucción a la vez"></iframe>
+  </section>
+
+  <!-- ===== 3. JS es síncrono ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">02</p>
+        <h2 class="slide__titulo">Y es síncrono</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/02-sincrono.html"
+            title="Animación: las instrucciones se ejecutan en orden, una tras otra"></iframe>
+  </section>
+
+  <!-- ===== 4. Event Loop y callbacks ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">03</p>
+        <h2 class="slide__titulo">Event Loop y callbacks</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/03-event-loop-callbacks.html"
+            title="Animación: el event loop y los callbacks"></iframe>
+  </section>
+
+  <!-- ===== 5. Call Stack ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">04</p>
+        <h2 class="slide__titulo">Call Stack</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/04-call-stack.html"
+            title="Animación: la pila de llamadas"></iframe>
+  </section>
+
+  <!-- ===== 6. Event Loop ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">05</p>
+        <h2 class="slide__titulo">Event Loop</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/05-event-loop.html"
+            title="Animación: el bucle de eventos"></iframe>
+  </section>
+
+  <!-- ===== 7. Web APIs ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">06</p>
+        <h2 class="slide__titulo">Web APIs</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/06-web-apis.html"
+            title="Animación: las Web APIs del navegador"></iframe>
+  </section>
+
+  <!-- ===== 8. Categorías de Web APIs ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">07</p>
+        <h2 class="slide__titulo">4 categorías de Web APIs</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/07-web-apis-categorias.html"
+            title="Animación: las cuatro categorías de Web APIs"></iframe>
+  </section>
+
+  <!-- ===== 9. Macrotask Queue ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">08</p>
+        <h2 class="slide__titulo">Macrotask Queue</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/08-macrotask-queue.html"
+            title="Animación: la cola de macrotasks"></iframe>
+  </section>
+
+  <!-- ===== 10. Microtask Queue ===== -->
+  <section class="slide">
+    <header class="slide__encabezado">
+      <div>
+        <p class="slide__kicker">09</p>
+        <h2 class="slide__titulo">Microtask Queue</h2>
+      </div>
+    </header>
+    <iframe class="animacion" data-src="animaciones/09-microtask-queue.html"
+            title="Animación: la cola de microtasks y su prioridad"></iframe>
+  </section>
+
+  <!-- ===== 11. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
+  <section class="slide slide--lienzo">
+    <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
+            title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
+  </section>
+
+  <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
+  <div class="barra"><div class="barra__progreso"></div></div>
+  <div class="contador">1 / 11</div>
+
+  <nav class="flechas">
+    <button class="flechas__anterior" type="button" aria-label="Slide anterior">&larr;</button>
+    <button class="flechas__siguiente" type="button" aria-label="Slide siguiente">&rarr;</button>
+  </nav>
+
+  <div class="ayuda-deck oculto">
+    <div class="ayuda-deck__tarjeta">
+      <h2>Controles</h2>
+      <table>
+        <tr><td><kbd>&rarr;</kbd> <kbd>Espacio</kbd></td><td>Slide siguiente</td></tr>
+        <tr><td><kbd>&larr;</kbd></td><td>Slide anterior</td></tr>
+        <tr><td><kbd>Inicio</kbd> <kbd>Fin</kbd></td><td>Primera / última slide</td></tr>
+        <tr><td><kbd>F</kbd></td><td>Pantalla completa</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/deck.js"></script>
+</body>
+</html>
