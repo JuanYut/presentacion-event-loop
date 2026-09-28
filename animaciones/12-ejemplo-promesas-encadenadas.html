@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>10 · Ejemplo 1: setTimeout 0</title>
+    <title>12 · Ejemplo 3: Promesas encadenadas</title>
     <link rel="stylesheet" href="../vendor/fuentes/fuentes.css" />
     <link rel="stylesheet" href="../shared/styles.css" />
     <style>
@@ -108,8 +108,8 @@
   <body>
     <div class="stage stage--slide ej">
       <header class="titulo">
-        <span class="titulo__numero">Ejemplo 1</span>
-        <span>setTimeout con 0 ms</span>
+        <span class="titulo__numero">Ejemplo 3</span>
+        <span>Promesas encadenadas</span>
       </header>
 
       <main class="escena">
@@ -119,13 +119,17 @@
           <div class="panel__cuerpo">
             <pre
               class="codigo"
-            ><span class="codigo__resaltado"></span><span class="linea">console.<span class="fn">log</span>(<span class="str">"A"</span>);</span>
-<span class="linea"></span>
-<span class="linea"><span class="fn">setTimeout</span>(() => {</span>
-<span class="linea">  console.<span class="fn">log</span>(<span class="str">"B"</span>);</span>
+            ><span class="codigo__resaltado"></span><span class="linea"><span class="fn">setTimeout</span>(() => {</span>
+<span class="linea">  console.<span class="fn">log</span>(<span class="str">"A"</span>);</span>
 <span class="linea">}, <span class="num">0</span>);</span>
 <span class="linea"></span>
-<span class="linea">console.<span class="fn">log</span>(<span class="str">"C"</span>);</span></pre>
+<span class="linea">Promise.<span class="fn">resolve</span>()</span>
+<span class="linea">  .<span class="fn">then</span>(() => {</span>
+<span class="linea">    console.<span class="fn">log</span>(<span class="str">"B"</span>);</span>
+<span class="linea">  })</span>
+<span class="linea">  .<span class="fn">then</span>(() => {</span>
+<span class="linea">    console.<span class="fn">log</span>(<span class="str">"C"</span>);</span>
+<span class="linea">  });</span></pre>
           </div>
         </section>
 
@@ -144,18 +148,26 @@
           <section class="panel panel--stack">
             <div class="panel__titulo">Call Stack</div>
             <div class="panel__cuerpo">
-              <div class="frame" id="f-log-a" style="--i: 0">
-                console.log("A")
-              </div>
               <div class="frame" id="f-settimeout" style="--i: 0">
-                setTimeout(cb, 0)
+                setTimeout(cbA, 0)
               </div>
-              <div class="frame" id="f-log-c" style="--i: 0">
-                console.log("C")
+              <div class="frame" id="f-then-b" style="--i: 0">
+                .then(cbB)
               </div>
-              <div class="frame" id="f-cb" style="--i: 0">cb()</div>
+              <div class="frame" id="f-then-c" style="--i: 0">
+                .then(cbC)
+              </div>
+              <div class="frame" id="f-cb-b" style="--i: 0">cbB()</div>
               <div class="frame" id="f-log-b" style="--i: 1">
                 console.log("B")
+              </div>
+              <div class="frame" id="f-cb-c" style="--i: 0">cbC()</div>
+              <div class="frame" id="f-log-c" style="--i: 1">
+                console.log("C")
+              </div>
+              <div class="frame" id="f-cb-a" style="--i: 0">cbA()</div>
+              <div class="frame" id="f-log-a" style="--i: 1">
+                console.log("A")
               </div>
             </div>
           </section>
@@ -166,18 +178,27 @@
             </div>
             <div class="panel__cuerpo">
               <div class="item item--webapi" id="w-timer" style="--i: 0">
-                <span>timer · cb</span
+                <span>timer · cbA</span
                 ><span class="temporizador" id="w-tiempo">0 ms</span>
               </div>
             </div>
           </section>
 
-          <!-- Vacío en este ejemplo: se mantiene para que la UI sea la misma en todos -->
           <section class="panel panel--micro">
             <div class="panel__titulo">
               Microtask Queue <span style="opacity: 0.6">(Promises)</span>
             </div>
-            <div class="panel__cuerpo"></div>
+            <div class="panel__cuerpo">
+              <!-- cbB entra en cuanto se lee el primer .then (la promesa ya está
+                   resuelta). cbC entra solo cuando cbB termina: nunca están
+                   las dos a la vez, por eso comparten posición. -->
+              <div class="item item--micro" id="m-cb-b" style="--i: 0">
+                <span>cbB</span>
+              </div>
+              <div class="item item--micro" id="m-cb-c" style="--i: 0">
+                <span>cbC</span>
+              </div>
+            </div>
           </section>
 
           <section class="panel panel--macro">
@@ -185,8 +206,8 @@
               Macrotask Queue <span style="opacity: 0.6">(Web APIs)</span>
             </div>
             <div class="panel__cuerpo">
-              <div class="item item--macro" id="q-cb" style="--i: 0">
-                <span>cb</span>
+              <div class="item item--macro" id="q-cb-a" style="--i: 0">
+                <span>cbA</span>
               </div>
             </div>
           </section>
@@ -194,9 +215,10 @@
           <section class="panel panel--consola">
             <div class="panel__titulo">Consola</div>
             <div class="panel__cuerpo consola">
-              <div class="consola__linea" id="c-a">A</div>
-              <div class="consola__linea" id="c-c">C</div>
+              <!-- En el orden en que se imprimen, no en el del código -->
               <div class="consola__linea" id="c-b">B</div>
+              <div class="consola__linea" id="c-c">C</div>
+              <div class="consola__linea" id="c-a">A</div>
             </div>
           </section>
         </div>
@@ -241,16 +263,35 @@
         defaults: { duration: DUR.normal, ease: EASE.suave },
       });
 
-      // Una instrucción síncrona sencilla: entra al stack, imprime y sale
-      function logSincrono(linea, frame, lineaConsola, etiqueta) {
-        tl.addLabel(etiqueta);
-        resaltarLinea(tl, linea);
-        apilar(tl, frame);
+      // Un callback que el event loop saca de una cola y ejecuta: entra al
+      // stack, corre su console.log (en la línea de dentro) y sale.
+      function ejecutarCallback(item, frameCb, lineaLog, frameLog, lineaConsola, lineaCierre) {
+        desencolar(tl, item);
+        apilar(tl, frameCb, "<+=0.2");
+        esperar(tl, DUR.rapida);
+        resaltarLinea(tl, lineaLog);
+        apilar(tl, frameLog);
         esperar(tl, DUR.rapida);
         imprimir(tl, lineaConsola);
         esperar(tl, DUR.rapida);
-        desapilar(tl, frame);
+        desapilar(tl, frameLog);
+        resaltarLinea(tl, lineaCierre);
+        esperar(tl, DUR.rapida);
+        desapilar(tl, frameCb);
+        resaltarLinea(tl, null, "<");
         esperar(tl);
+      }
+
+      // El event loop "late": revisa el stack y va a por la siguiente tarea
+      function latidoLoop() {
+        resaltarLinea(tl, null);
+        tl.to(loop, {
+          scale: 1.2,
+          duration: DUR.rapida,
+          repeat: 1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
       }
 
       // El contador de ciclo se cambia con tl.set y no con tl.call: GSAP no
@@ -260,12 +301,9 @@
       tl.set($("ciclo"), { textContent: "Ciclo 1" });
       esperar(tl, DUR.margen);
 
-      // 1) console.log("A") → imprime A
-      logSincrono(1, $("f-log-a"), $("c-a"), "log-a");
-
-      // 2) setTimeout registra el callback en Web APIs (con su timer) y sale del stack
+      // 1) setTimeout registra cbA en Web APIs, con su timer, y sale del stack
       tl.addLabel("settimeout");
-      resaltarLinea(tl, 3);
+      resaltarLinea(tl, 1);
       apilar(tl, $("f-settimeout"));
       esperar(tl, DUR.rapida);
       encolar(tl, $("w-timer"));
@@ -273,7 +311,7 @@
       desapilar(tl, $("f-settimeout"));
       esperar(tl);
 
-      // 3) El timer de 0 ms vence: el callback pasa a la Macrotask Queue...
+      // 2) El timer de 0 ms vence: cbA pasa a la Macrotask Queue a esperar
       tl.addLabel("timer-vence");
       tl.to("#w-tiempo", {
         opacity: 0.4,
@@ -282,40 +320,71 @@
         yoyo: true,
       });
       desencolar(tl, $("w-timer"));
-      encolar(tl, $("q-cb"), "<+=0.2");
+      encolar(tl, $("q-cb-a"), "<+=0.2");
       esperar(tl);
 
-      // 4) ...pero el stack sigue ocupado: console.log("C") va primero
-      logSincrono(7, $("f-log-c"), $("c-c"), "log-c");
+      // 3) La promesa ya está resuelta: el primer .then manda cbB directo a
+      //    la Microtask Queue. No pasa por Web APIs: las Promises son JS puro.
+      tl.addLabel("then-b");
+      resaltarLinea(tl, 6);
+      apilar(tl, $("f-then-b"));
+      esperar(tl, DUR.rapida);
+      encolar(tl, $("m-cb-b"));
+      esperar(tl, DUR.rapida);
+      desapilar(tl, $("f-then-b"));
+      esperar(tl);
 
-      // 5) Stack vacío: el event loop mueve el callback de la cola al stack
-      tl.addLabel("stack-vacio");
-      tl.set($("ciclo"), { textContent: "Ciclo 2" }, "<");
-      resaltarLinea(tl, null);
-      tl.to(loop, {
-        scale: 1.2,
+      // 4) El segundo .then solo se REGISTRA: depende de la promesa que
+      //    devuelve el primero, que aún no se resuelve. cbC no va a ninguna
+      //    cola todavía.
+      tl.addLabel("then-c");
+      resaltarLinea(tl, 9);
+      apilar(tl, $("f-then-c"));
+      esperar(tl, DUR.pausa);
+      desapilar(tl, $("f-then-c"));
+      esperar(tl);
+
+      // 5) Termina el script y el stack queda vacío. Hay tarea en las dos
+      //    colas, pero primero se vacía la Microtask Queue: corre cbB.
+      tl.addLabel("microtask-b");
+      latidoLoop();
+      tl.to($("m-cb-b"), {
+        scale: 1.08,
         duration: DUR.rapida,
         repeat: 1,
         yoyo: true,
-        ease: "sine.inOut",
-      });
-      desencolar(tl, $("q-cb"));
-      apilar(tl, $("f-cb"), "<+=0.2");
-      esperar(tl);
-
-      // 6) Dentro del callback: console.log("B") → imprime B, y todo sale del stack
-      tl.addLabel("log-b");
-      resaltarLinea(tl, 4);
+      }, "<");
+      desencolar(tl, $("m-cb-b"));
+      apilar(tl, $("f-cb-b"), "<+=0.2");
+      esperar(tl, DUR.rapida);
+      resaltarLinea(tl, 7);
       apilar(tl, $("f-log-b"));
       esperar(tl, DUR.rapida);
       imprimir(tl, $("c-b"));
       esperar(tl, DUR.rapida);
       desapilar(tl, $("f-log-b"));
-      resaltarLinea(tl, 5);
+      resaltarLinea(tl, 8);
       esperar(tl, DUR.rapida);
-      desapilar(tl, $("f-cb"));
-      resaltarLinea(tl, null, "<");
+      desapilar(tl, $("f-cb-b"));
+
+      // 6) Al terminar cbB se resuelve la promesa del segundo .then: cbC
+      //    entra AHORA a la Microtask Queue, mientras se está vaciando
+      tl.addLabel("encola-c");
+      resaltarLinea(tl, 9);
+      encolar(tl, $("m-cb-c"));
       esperar(tl);
+
+      // 7) La Microtask Queue no quedó vacía: el event loop sigue con ella
+      //    en el MISMO ciclo, antes de tocar la Macrotask Queue
+      tl.addLabel("microtask-c");
+      latidoLoop();
+      ejecutarCallback($("m-cb-c"), $("f-cb-c"), 10, $("f-log-c"), $("c-c"), 11);
+
+      // 8) Ahora sí, Microtask Queue vacía: UNA macrotask por ciclo → cbA
+      tl.addLabel("macrotask");
+      tl.set($("ciclo"), { textContent: "Ciclo 2" });
+      latidoLoop();
+      ejecutarCallback($("q-cb-a"), $("f-cb-a"), 2, $("f-log-a"), $("c-a"), 3);
 
       tl.addLabel("fin");
       esperar(tl, DUR.margen);
