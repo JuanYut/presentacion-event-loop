@@ -280,21 +280,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
   </section>
 
   <!-- ===== 25. Del ejemplo a la vida real ===== -->
-  <section class="slide slide--texto">
-    <div class="resumen">
-      <p class="resumen__titulo">¿Te ha pasado?</p>
-      <ul class="puntos">
-        <li class="aparece"><strong>Tu página se congela</strong> mientras procesa algo pesado.
-          <span class="puntos__causa">Bloqueaste el único hilo: nada más puede ejecutarse.</span></li>
-        <li class="aparece"><strong>El loader nunca aparece</strong>, aunque lo muestras antes del cálculo.
-          <span class="puntos__causa">El navegador no repinta hasta que el Call Stack se vacía.</span></li>
-        <li class="aparece">Haces <strong>console.log(datos)</strong> y sale <strong>undefined</strong>.
-          <span class="puntos__causa">El fetch todavía no respondía: su callback espera en una cola.</span></li>
-        <li class="aparece"><strong>setTimeout(fn, 0)</strong> no se ejecuta "ya".
-          <span class="puntos__causa">Espera su turno en la Macrotask Queue, detrás de todas las microtasks.</span></li>
-      </ul>
-      <p class="puntos__remate aparece">Spoiler: todo eso es el Event Loop.</p>
-    </div>
+  <section class="slide slide--oscura slide--centrada">
+    <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
   <!-- ===== 26. Resumen de la charla ===== -->

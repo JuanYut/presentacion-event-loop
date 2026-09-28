@@ -198,6 +198,11 @@ html, body {
   font-size: 160px;
   line-height: 1.02;
 }
+/* Frase de dos líneas largas: más chica para que cada línea quepa entera */
+.frase--larga {
+  font-size: 104px;
+  line-height: 1.12;
+}
 /* Alineada a la izquierda pero con el bloque centrado en la slide */
 .slide--centrada .frase--izquierda { text-align: left; }
 
