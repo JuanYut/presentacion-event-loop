@@ -119,7 +119,7 @@ progreso se ajustan solos. Clases de slide (sección 4 de `css/deck.css`):
 
 | Clase | Para qué |
 |---|---|
-| `slide--portada` | Ponente arriba y título enorme |
+| `slide--portada` | Ponente arriba y título enorme, con movimiento leve y cíclico: el avatar flota y "Event Loop" tiene un brillo que lo cruza (CSS puro, se detiene con `prefers-reduced-motion`). Juan pidió animar lo que ya había, sin agregar elementos |
 | `slide--centrada` | Frases al público (`.frase`) y separadores (`.seccion`), rejilla de `.actores` |
 | `slide--texto` | Texto corrido: párrafos (`.parrafos`) o bullets (`.puntos`) con negritas |
 | `slide--partida` | Texto a la izquierda (500px) y animación de 796px a la derecha |
@@ -198,19 +198,25 @@ siguiente macrotask.
 
 ## Estado actual
 
-Las 29 slides están montadas. Van de la portada a "Gracias wdt :)". El
+Las 30 slides están montadas. Van de la portada a "Gracias wdt :)". El
 tramo final es de Claude, sin diseño de Juan, con el estilo de la slide 4:
 
 - 21 "Ejemplos", y 22 a 24 los Ejemplos 1, 2 y 3 (el 2 y el 3, sobre el molde)
-- 25 "¿Te ha pasado?": bugs cotidianos (síntoma + causa) y "Spoiler: todo eso
-  es el Event Loop"
+- 25 "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
+  (frase grande; antes era una lista de bugs, "¿Te ha pasado?", que a Juan
+  no le convenció y eligió esta frase en su lugar)
 - 26 "En resumen"
 - 27 "¿Aburrido? Tal vez.": responde a la broma de la slide 2
-- 28 "¿Por qué importa?": el mensaje de la IA y el software engineer
+- 28 y 29, cierre emocional: "Hoy la IA escribe código… alguien tiene que
+  saber cómo funcionan los fierros." visible de entrada y "Sé esa persona."
+  aparece con el clic (negra) y "El Event Loop nunca se detiene. Que tu curiosidad
+  tampoco." (amarilla, retoma el "ciclo eterno"). Reemplazan a "¿Por qué
+  importa?", que eran bullets
+- 30 "Gracias wdt :)"
 
 ### Pendiente
 
-1. Si llegan más ejemplos, van entre el último ejemplo y "¿Te ha pasado?",
+1. Si llegan más ejemplos, van entre el último ejemplo y la slide 25,
    siguiendo el molde.
 2. **Revisión de Juan en su pantalla**, sobre todo el ritmo al cambiar de slide
    y que las animaciones arranquen bien.
