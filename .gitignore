@@ -7,3 +7,6 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# Diseños de Juan (capturas de las slides): referencia local y temporal
+images/
