@@ -256,7 +256,6 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
         <ul class="cola__codigo">
           <li>setTimeout(() =&gt; {}, 0);</li>
           <li>setInterval(() =&gt; {}, 1000);</li>
-          <li>fetch('/url');</li>
           <li>addEventListener('click', ...);</li>
           <li>XMLHttpRequest;</li>
         </ul>
@@ -292,8 +291,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
         <ul class="cola__codigo">
           <li>Promise.resolve().then(() =&gt; {});</li>
           <li>Promise.reject().catch(() =&gt; {});</li>
-          <li>Promise.finally(() =&gt; {});</li>
-          <li>Promise.resolve().then(() =&gt; {});</li>
+          <li>Promise.resolve().finally(() =&gt; {});</li>
+          <li>queueMicrotask(() =&gt; {});</li>
         </ul>
       </div>
     </div>
