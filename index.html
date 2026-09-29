@@ -42,12 +42,7 @@
     </h1>
   </section>
 
-  <!-- ===== 2. Rompehielos ===== -->
-  <section class="slide slide--centrada">
-    <p class="frase frase--izquierda">¿Event Loop?,<br>¿neta, wey?,<br>qué aburrido</p>
-  </section>
-
-  <!-- ===== 3. Sección: ¿Qué es el Event Loop? ===== -->
+  <!-- ===== 2. Sección: ¿Qué es el Event Loop? ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion">
       <span class="seccion__antetitulo">¿Qué es el</span>
@@ -55,7 +50,7 @@
     </h2>
   </section>
 
-  <!-- ===== 4. Qué es el Event Loop y por qué importa ===== -->
+  <!-- ===== 3. Qué es el Event Loop y por qué importa ===== -->
   <section class="slide slide--texto">
     <ul class="puntos">
       <li class="aparece"><strong>JavaScript</strong> hace una sola cosa a la vez: tiene <strong>un solo hilo</strong>.</li>
@@ -67,26 +62,26 @@
     </ul>
   </section>
 
-  <!-- ===== 5. Transición a los conceptos de JavaScript ===== -->
+  <!-- ===== 4. Transición a los conceptos de JavaScript ===== -->
   <section class="slide slide--centrada">
     <p class="frase frase--mediana">Vamos a explicar<br>algunas cositas<br>de JavaScript…</p>
   </section>
 
-  <!-- ===== 6. JS es single-threaded ===== -->
+  <!-- ===== 5. JS es single-threaded ===== -->
   <section class="slide slide--partida">
     <p class="texto"><strong>JS es single-threaded:</strong><br>Solo puede ejecutar una instrucción a la vez</p>
     <iframe class="animacion" data-src="animaciones/01-single-thread.html"
             title="Animación: un solo hilo ejecuta una instrucción a la vez"></iframe>
   </section>
 
-  <!-- ===== 7. JS es síncrono ===== -->
+  <!-- ===== 6. JS es síncrono ===== -->
   <section class="slide slide--partida">
     <p class="texto"><strong>JS es síncrono:</strong><br>El código se ejecuta línea por línea, en orden</p>
     <iframe class="animacion" data-src="animaciones/02-sincrono.html"
             title="Animación: las instrucciones se ejecutan en orden, una tras otra"></iframe>
   </section>
 
-  <!-- ===== 8. Asincronía con el Event Loop ===== -->
+  <!-- ===== 7. Asincronía con el Event Loop ===== -->
   <section class="slide slide--partida">
     <div>
       <p class="texto"><strong>JS maneja asincronía con el Event Loop:</strong><br>Los callbacks esperan a que el hilo esté libre</p>
@@ -96,7 +91,7 @@
             title="Animación: el event loop y los callbacks"></iframe>
   </section>
 
-  <!-- ===== 9. Pregunta al público: síncrono vs asíncrono =====
+  <!-- ===== 8. Pregunta al público: síncrono vs asíncrono =====
        Reusa el aspecto de "¿Verdadero o falso?" (.vf). La respuesta la da la
        slide siguiente; aquí el clic solo muestra una pista, por si nadie se anima. -->
   <section class="slide slide--centrada slide--vf">
@@ -111,7 +106,7 @@
     </div>
   </section>
 
-  <!-- ===== 10. Síncrono vs asíncrono ===== -->
+  <!-- ===== 9. Síncrono vs asíncrono ===== -->
   <section class="slide slide--comparacion">
     <p class="texto"><strong>Síncrono:</strong><br>Código que se ejecuta línea por línea, al instante. Bloquea, porque espera a que todo termine.</p>
 <pre class="codigo-slide">console.<span class="fn">log</span>(<span class="str">'1'</span>);
@@ -122,17 +117,17 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
 <span class="cm aparece">// Output: 1, 2</span></pre>
   </section>
 
-  <!-- ===== 11. Pausa para preguntas ===== -->
+  <!-- ===== 10. Pausa para preguntas ===== -->
   <section class="slide slide--centrada">
     <p class="frase frase--mediana">¿Todo chido<br>hasta aquí? :)</p>
   </section>
 
-  <!-- ===== 12. Sección: Actores ===== -->
+  <!-- ===== 11. Sección: Actores ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__titulo seccion__titulo--enorme">ACTORES</span></h2>
   </section>
 
-  <!-- ===== 13. Actores: Call Stack ===== -->
+  <!-- ===== 12. Actores: Call Stack ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor actor--activo">Call Stack</div>
@@ -142,7 +137,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 14. Call Stack ===== -->
+  <!-- ===== 13. Call Stack ===== -->
   <section class="slide slide--partida slide--partida-ancha">
     <div class="lista">
       <p><strong>Call Stack:</strong></p>
@@ -157,7 +152,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la pila de llamadas"></iframe>
   </section>
 
-  <!-- ===== 15. Actores: Event Loop ===== -->
+  <!-- ===== 14. Actores: Event Loop ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -167,7 +162,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 16. Event Loop ===== -->
+  <!-- ===== 15. Event Loop ===== -->
   <section class="slide slide--partida slide--partida-ancha">
     <div class="lista">
       <p><strong>Event Loop:</strong></p>
@@ -181,7 +176,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: el bucle de eventos"></iframe>
   </section>
 
-  <!-- ===== 17. Actores: Web APIs ===== -->
+  <!-- ===== 16. Actores: Web APIs ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -191,7 +186,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 18. ¿Verdadero o falso? (setTimeout) ===== -->
+  <!-- ===== 17. ¿Verdadero o falso? (setTimeout) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
@@ -203,7 +198,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 19. Web APIs ===== -->
+  <!-- ===== 18. Web APIs ===== -->
   <section class="slide slide--partida slide--partida-ancha">
     <div class="lista">
       <p><strong>Web APIs:</strong></p>
@@ -217,14 +212,14 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: las Web APIs del navegador"></iframe>
   </section>
 
-  <!-- ===== 20. Categorías de Web APIs ===== -->
+  <!-- ===== 19. Categorías de Web APIs ===== -->
   <section class="slide slide--partida slide--partida-media">
     <p class="encabezado-lateral">4 categorías importantes de Web APIs:</p>
     <iframe class="animacion" data-src="animaciones/07-web-apis-categorias.html"
             title="Animación: las cuatro categorías de Web APIs"></iframe>
   </section>
 
-  <!-- ===== 21. Actores: Colas de tareas ===== -->
+  <!-- ===== 20. Actores: Colas de tareas ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -234,7 +229,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 22. Macrotask Queue ===== -->
+  <!-- ===== 21. Macrotask Queue ===== -->
   <section class="slide slide--partida slide--partida-cola">
     <div class="cola">
       <p class="cola__alias">Callback queue</p>
@@ -259,7 +254,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la cola de macrotasks"></iframe>
   </section>
 
-  <!-- ===== 23. ¿Verdadero o falso? (Promises) ===== -->
+  <!-- ===== 22. ¿Verdadero o falso? (Promises) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
@@ -271,7 +266,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 24. Microtask Queue ===== -->
+  <!-- ===== 23. Microtask Queue ===== -->
   <section class="slide slide--partida slide--partida-cola">
     <div class="cola">
       <p class="cola__titulo">Microtask Queue:</p>
@@ -294,7 +289,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la cola de microtasks y su prioridad"></iframe>
   </section>
 
-  <!-- ===== 25. Sección: Ejemplos ===== -->
+  <!-- ===== 24. Sección: Ejemplos ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__titulo seccion__titulo--ejemplos">Ejemplos</span></h2>
   </section>
@@ -305,7 +300,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     charla no se quede sin ella.
   -->
 
-  <!-- ===== 26. ¿Qué se imprime? (Ejemplo 1) ===== -->
+  <!-- ===== 25. ¿Qué se imprime? (Ejemplo 1) ===== -->
   <section class="slide slide--quiz">
     <div class="quiz__encabezado">
       <p class="quiz__titulo">¿Qué se imprime?</p>
@@ -327,13 +322,13 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     </div>
   </section>
 
-  <!-- ===== 27. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
+  <!-- ===== 26. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
 
-  <!-- ===== 28. ¿Qué se imprime? (Ejemplo 2) ===== -->
+  <!-- ===== 27. ¿Qué se imprime? (Ejemplo 2) ===== -->
   <section class="slide slide--quiz">
     <div class="quiz__encabezado">
       <p class="quiz__titulo">¿Qué se imprime?</p>
@@ -357,13 +352,13 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     </div>
   </section>
 
-  <!-- ===== 29. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
+  <!-- ===== 28. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/11-ejemplo-promise.html"
             title="Animación: setTimeout contra Promise, la microtask va primero"></iframe>
   </section>
 
-  <!-- ===== 30. ¿Qué se imprime? (Ejemplo 3) =====
+  <!-- ===== 29. ¿Qué se imprime? (Ejemplo 3) =====
        OCULTA junto con el Ejemplo 3: quita "oculta" para volver a mostrarla -->
   <section class="slide slide--quiz oculta">
     <div class="quiz__encabezado">
@@ -390,19 +385,19 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 31. Ejemplo 3: Promesas encadenadas (16:9) =====
+  <!-- ===== 30. Ejemplo 3: Promesas encadenadas (16:9) =====
        OCULTA para acortar la charla: quita "oculta" de la clase para volver a mostrarla -->
   <section class="slide slide--oscura slide--lienzo oculta">
     <iframe class="animacion animacion--ancha" data-src="animaciones/12-ejemplo-promesas-encadenadas.html"
             title="Animación: promesas encadenadas, una microtask encola otra en el mismo ciclo"></iframe>
   </section>
 
-  <!-- ===== 32. Del ejemplo a la vida real ===== -->
+  <!-- ===== 31. Del ejemplo a la vida real ===== -->
   <section class="slide slide--oscura slide--centrada">
     <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
-  <!-- ===== 33. Resumen de la charla ===== -->
+  <!-- ===== 32. Resumen de la charla ===== -->
   <section class="slide slide--texto">
     <div class="resumen">
       <p class="resumen__titulo">En resumen:</p>
@@ -415,7 +410,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 34. Respuesta a la slide 2 ("qué aburrido") ===== -->
+  <!-- ===== 33. "¿Aburrido? Tal vez." (antes respondía a la broma de apertura, ya quitada) ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div>
       <p class="frase frase--mediana">¿Aburrido? Tal vez.</p>
@@ -423,7 +418,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 35. Cierre emocional: la IA y entender ===== -->
+  <!-- ===== 34. Cierre emocional: la IA y entender ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="final">
       <p class="final__linea">Hoy la IA escribe código en segundos.</p>
@@ -432,7 +427,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 36. Cierre emocional: el ciclo eterno ===== -->
+  <!-- ===== 35. Cierre emocional: el ciclo eterno ===== -->
   <section class="slide slide--centrada">
     <div class="final">
       <p class="frase frase--mediana">El Event Loop<br>nunca se detiene.</p>
@@ -440,14 +435,14 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 37. Cierre ===== -->
+  <!-- ===== 36. Cierre ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__antetitulo seccion__antetitulo--cierre">Gracias wdt :)</span></h2>
   </section>
 
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
   <div class="barra"><div class="barra__progreso"></div></div>
-  <div class="contador">1 / 35</div>
+  <div class="contador">1 / 34</div>
 
   <!-- Barra de control de la animación: deck.js la coloca debajo del iframe
        de la slide actual y la esconde en las slides sin animación -->
