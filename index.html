@@ -111,7 +111,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
   <section class="slide slide--partida">
     <div>
       <p class="texto"><strong>JS maneja asincronía con el Event Loop:</strong><br>Los callbacks esperan a que el hilo esté libre</p>
-      <p class="nota">Callback: Una FN que pasas a otra FN para que esa la ejecute después</p>
+      <p class="nota">Callback: una función que le pasas a otra para que la ejecute después.</p>
     </div>
     <iframe class="animacion" data-src="animaciones/03-event-loop-callbacks.html"
             title="Animación: el event loop y los callbacks"></iframe>
@@ -143,7 +143,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
       <p><strong>Call Stack:</strong></p>
       <ul>
         <li class="aparece">Es una pila LIFO (último en entrar, primero en salir).</li>
-        <li class="aparece">Es donde se ven las funciones/ operaciones que el hilo está ejecutando.</li>
+        <li class="aparece">Es donde se ven las funciones u operaciones que el hilo está ejecutando.</li>
         <li class="aparece">Es bloqueante PORQUE el hilo de JS solo puede hacer una cosa a la vez.</li>
         <li class="aparece">Es una visualización del trabajo del hilo, no quien controla el flujo.</li>
       </ul>
@@ -228,7 +228,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
         <li class="aparece">Prioridad BAJA.</li>
       </ul>
       <div class="aparece">
-        <p class="cola__ejemplos"><strong>Ejemplos Macro Tasks (Web APIs):</strong></p>
+        <p class="cola__ejemplos"><strong>Ejemplos de macrotasks:</strong></p>
         <ul class="cola__codigo">
           <li>setTimeout(() =&gt; {}, 0);</li>
           <li>setInterval(() =&gt; {}, 1000);</li>
@@ -263,7 +263,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
         <li class="aparece">Prioridad ALTA.</li>
       </ul>
       <div class="aparece">
-        <p class="cola__ejemplos"><strong>Ejemplos Micro Tasks (Promises):</strong></p>
+        <p class="cola__ejemplos"><strong>Ejemplos de microtasks:</strong></p>
         <ul class="cola__codigo">
           <li>Promise.resolve().then(() =&gt; {});</li>
           <li>Promise.reject().catch(() =&gt; {});</li>
