@@ -120,7 +120,7 @@ progreso se ajustan solos. Clases de slide (sección 4 de `css/deck.css`):
 | Clase | Para qué |
 |---|---|
 | `slide--portada` | Ponente arriba y título enorme, con movimiento leve y cíclico: el avatar flota y "Event Loop" tiene un brillo que lo cruza (CSS puro, se detiene con `prefers-reduced-motion`). Juan pidió animar lo que ya había, sin agregar elementos |
-| `slide--centrada` | Frases al público (`.frase`) y separadores (`.seccion`), rejilla de `.actores` |
+| `slide--centrada` | Frases al público (`.frase`) y separadores (`.seccion`), rejilla de `.actores` (la clase se quedó con su nombre original; en pantalla son "Los engranes del motor") |
 | `slide--texto` | Texto corrido: párrafos (`.parrafos`) o bullets (`.puntos`) con negritas |
 | `slide--partida` | Texto a la izquierda (500px) y animación de 796px a la derecha |
 | `slide--partida-ancha` | Igual, con columna de texto de 930px (listas `.lista`: Call Stack, Event Loop, Web APIs) |
@@ -130,16 +130,28 @@ progreso se ajustan solos. Clases de slide (sección 4 de `css/deck.css`):
 | `slide--lienzo` | Animación 16:9 a sangre |
 | `slide--oscura` | Modificador: fondo tinta y letra amarilla. `deck.js` invierte también la barra y el contador |
 | `slide--quiz` | "¿Qué se imprime?": código a la izquierda y 3 opciones numeradas (no con letras: A, B, C es lo que imprime el código). La correcta se marca con el siguiente clic (`.opcion__marca`, un paso `.aparece`) |
-| `slide--vf` | "¿Verdadero o falso?": una afirmación grande y, con el siguiente clic, el veredicto en una pastilla negra y su explicación (`.vf__respuesta`, un paso `.aparece`). También sirve para preguntas abiertas al público (síncrono vs asíncrono: la pastilla dice "Pista") |
+| `slide--vf` | "¿Verdadero o falso?": una afirmación grande y, con el siguiente clic, el veredicto en una pastilla negra y su explicación (`.vf__respuesta`, un paso `.aparece`). También sirve para preguntas abiertas al público (síncrono vs asíncrono: la pastilla dice "Pista"), para las slides "Dato curioso" y para "El problema"/"La solución" (sin pastilla: el detalle es un `.vf__explicacion aparece`) |
+| `.linea` | Línea del tiempo dentro de una `slide--centrada`: título, raya y 4 hitos (`.linea__hito`, cada uno un paso) con año, punto y texto |
+| `.lenguajes` | Tabla de estrategias contra el bloqueo, dentro de una `slide--centrada`. Es una rejilla y no un `<table>` para que cada fila (`.lenguajes__fila`) sea un paso. Todas las filas van iguales: Juan no quiso resaltar la de JavaScript |
 | `oculta` | Saca la slide de la charla sin borrarla: `deck.js` solo recoge `.slide:not(.oculta)`, así que el contador y la numeración por `#n` la ignoran |
+
+**Iconos:** las slides con etiqueta (El problema, La solución, Dato curioso,
+Pregunta, ¿Verdadero o falso?) y "Los engranes del motor" llevan
+un icono discreto encima. Salen de un sprite SVG al inicio del `<body>`
+(`<symbol id="icono-...">`) y se usan con
+`<svg class="icono"><use href="#icono-..."/></svg>`. Van en línea y no en
+archivos para que funcionen con doble clic y sin internet. El trazo es
+`currentColor`, así que se adaptan a slides negras y amarillas; en los
+separadores de sección, `icono--seccion` los agranda. Los dibujó Claude a mano
+(el engrane se generó con `awk` para que los dientes queden simétricos).
 
 **Pasos (bullets que aparecen de uno en uno):** cualquier elemento con
 `class="aparece"` empieza escondido. Avanzar lo revela y solo cuando se ven
 todos pasa de slide; retroceder los esconde en orden inverso. Al volver a una
 slide desde la siguiente, llega con todos visibles. Está en la sección 3b de
 `deck.js`: `siguiente()`/`anterior()` son la única puerta de entrada, así que
-funciona con teclas, clic, rueda y mando. Hoy lo usan los bullets de la
-historia del Event Loop (`.puntos`, antes eran párrafos), "¿Qué va en las colas?", Call Stack, Event Loop, Web APIs y
+funciona con teclas, clic, rueda y mando. Hoy lo usan el detalle de "El problema"
+y "La solución", "¿Qué va en las colas?", Call Stack, Event Loop, Web APIs y
 las dos colas; en las colas, el bloque de
 ejemplos aparece entero en un solo paso.
 
@@ -201,52 +213,68 @@ siguiente macrotask.
 
 ## Estado actual
 
-La charla está completa: 37 slides en el HTML, 35 visibles (2 ocultas).
+La charla está completa: 45 slides en el HTML, 43 visibles (2 ocultas).
 Esta lista va **por títulos y en orden**, no por número: los números cambian
 cada vez que se agrega o se quita una slide. Lo marcado con (C) lo hizo
 Claude sin diseño de Juan; el resto sale de sus diseños.
 
 1. Portada (avatar que flota y brillo en "Event Loop")
-2. Sección "¿Qué es el Event Loop?"
-3. La historia del Event Loop, en bullets por pasos: un solo hilo → el
-   problema → la solución → quién decide cuándo retomar (el Event Loop) → qué
-   se gana. Su último bullet promete lo que resuelven los Ejemplos 1 y 2
-4. (C) "Vamos a explicar algunas cositas de JavaScript…"
-5. Single-threaded y síncrono (con animaciones)
-6. (C) Pregunta abierta: "¿Cuál es la diferencia entre síncrono y asíncrono?",
+2. (C) **Arranque en frío**: "¿Qué se imprime?" con el código del Ejemplo 2,
+   **sin respuesta**. Se vota y se deja abierto: es el gancho de la charla.
+   Se cierra en el quiz del Ejemplo 2, que dice "¿Se acuerdan de esta?"
+3. La historia del Event Loop, **una idea por slide** (aspecto `.vf`:
+   etiqueta chica, afirmación grande y el detalle con un clic): "El problema:
+   JavaScript hace una sola cosa a la vez" → "La solución: No esperar" →
+   "¿Y quién decide cuándo retomarlo?" → "Event Loop" solo, en grande y en
+   negro. Juan dice ahí de palabra "quien nos ayuda con esto es el Event
+   Loop". Sustituye a la sección "¿Qué es el Event Loop?" y a los bullets
+4. (C) **Contexto histórico**: "Dato curioso: JavaScript no inventó el Event
+   Loop. Lo heredó del navegador… y no fue lo único que heredó, ya lo verán"
+   (se cobra en el V/F de setTimeout, cuya explicación dice "como el Event
+   Loop, JS la heredó del navegador") y la línea del tiempo "¿Cómo llegamos
+   aquí?": 1995 JS nace con setTimeout, 2009 Node.js, 2015 Promises y
+   microtasks, 2017 async/await
+5. (C) "Para resolverlo, primero 3 cosas de JavaScript…" (single-threaded,
+   síncrono y asincronía)
+6. Single-threaded y síncrono (con animaciones)
+7. (C) Pregunta abierta: "¿Cuál es la diferencia entre síncrono y asíncrono?",
    con pista (una llamada vs un WhatsApp)
-7. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic
-8. Asincronía con el Event Loop y qué es un callback (con animación). Va
+8. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic
+9. Asincronía con el Event Loop y qué es un callback (con animación). Va
    DESPUÉS de síncrono vs asíncrono: primero qué es asíncrono, luego cómo lo hace JS
-9. "¿Todo chido hasta aquí? :)" y sección ACTORES
-10. Call Stack
-11. Web APIs: (C) "¿Verdadero o falso? setTimeout es parte de JavaScript"
+10. (C) **Los demás lenguajes**: tabla "¿Y los demás lenguajes?" (varios
+   hilos / Event Loop / hilos ligeros), "En JavaScript, el Event Loop no es
+   opcional" (negra) y "Dato curioso: async/await no nació en JavaScript"
+   (C# 2012). Va aquí porque el público ya sabe qué es un hilo y bloquear
+11. "¿Todo chido hasta aquí? :)" y sección "Los engranes del motor" (antes ACTORES). Sigue la metáfora de la portada: el Event Loop es el motor, no trabaja solo, y también sale en la rejilla como el engrane que hace girar a los demás. "Engranes" y no "engranajes": es lo que se dice en México
+12. Call Stack
+13. Web APIs: (C) "¿Verdadero o falso? setTimeout es parte de JavaScript"
     (falso), Web APIs y las 4 categorías
-12. Colas: (C) "¿Qué va en las colas?", Macrotask Queue, (C) "¿Verdadero o
-    falso? Todo lo que está dentro de una Promise se ejecuta después" (falso)
+14. Colas: (C) "¿Qué va en las colas?", Macrotask Queue, (C) "¿Verdadero o
+    falso? Todo lo que está dentro de una Promise se ejecuta después" (falso; la respuesta trae al lado un ejemplo MUY simple, a pedido de Juan: pero con el .then a la vista. Sin línea de Output: cada log lleva "// Sync" o "// Async" como guía de Juan, y la salida (dentro, then) la dice él. Sin log de fuera: Juan lo quitó para simplificar)
     y Microtask Queue
-13. Event Loop, **al final de los actores**: su trabajo es mover callbacks de
+15. Event Loop, **al final de los engranes**: su trabajo es mover callbacks de
     las colas al stack, así que se explica cuando ya se conocen las colas.
-    Es el orden en que viaja el código, el mismo de "¿Quién hace qué?"
-14. (C) "¿Quién hace qué?": la rejilla de ACTORES con el papel de cada uno,
+    Es el orden en que viaja el código, el mismo de "¿Qué hace cada engrane?"
+16. (C) "¿Qué hace cada engrane?": la rejilla de los engranes con el papel de cada uno,
     como repaso antes de los ejemplos
-15. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
+17. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
     animación. Ejemplos 2 y 3 son (C) sobre el molde. **El Ejemplo 3 y su quiz
     están ocultos** (`oculta`): Juan lo quitó para acortar
-16. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
-17. (C) "Las 3 reglas del Event Loop": síncrono → todas las microtasks → una
-    macrotask. Reemplaza a "En resumen", que repetía "¿Quién hace qué?"
-18. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
+18. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
+19. (C) "Las 3 reglas del Event Loop": síncrono → todas las microtasks → una
+    macrotask. Reemplaza a "En resumen", que repetía "¿Qué hace cada engrane?"
+20. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
     fierros. Sé esa persona." (negra) y "El Event Loop nunca se detiene. Que
     tu curiosidad tampoco." (amarilla)
-19. "Gracias wdt :)"
+21. "Gracias wdt :)"
 
 Se quitaron, a pedido de Juan: la broma de apertura ("¿Event Loop?, ¿neta,
 wey?, qué aburrido") y su respuesta del final ("¿Aburrido? Tal vez."), para
 ahorrar tiempo; una lista de bugs ("¿Te ha pasado?"); y una demo que
 congelaba la página 3 s.
 
-**Precisión técnica** (revisado en un análisis de la charla): `fetch` NO va
+**Precisión técnica** (revisado en un análisis de la charla; las fechas del contexto histórico se verificaron en la web, salvo el año en que HTML5 escribió el Event Loop, que no está claro y por eso no sale): `fetch` NO va
 en los ejemplos de macrotasks (es una Web API, pero su `.then` es una
 microtask), ni en la animación 08 (ahí dice `keydown`). `Promise.finally` no
 existe: es `Promise.resolve().finally(...)`.
@@ -254,9 +282,11 @@ existe: es `Promise.resolve().finally(...)`.
 **Ritmo de participación.** Juan pidió "más emoción". Las preguntas al
 público ("¿Qué se imprime?", "¿Verdadero o falso?", la pregunta abierta) se
 reparten para que participe cada 5 o 6 slides, sobre todo en el tramo largo
-de conceptos. Como ya no hay broma de apertura, la charla abre con una
-pregunta de palabra: "¿Quién ha escuchado del Event Loop? ¿Y quién podría
-explicarlo?".
+de conceptos. Como ya no hay broma de apertura, la charla abre con el
+arranque en frío: un "¿Qué se imprime?" que se vota y no se resuelve hasta
+el Ejemplo 2. Así el público tiene un motivo para seguir desde el minuto uno.
+Juan tiene pendiente una anécdota propia (un bug real) para ir entre el
+quiz y "El problema"; cuando la tenga, cabe ahí.
 
 ### Pendiente
 
