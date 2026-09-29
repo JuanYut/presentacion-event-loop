@@ -581,6 +581,54 @@ html, body {
   font-weight: 400;
   line-height: 1.3;
 }
+/* Respuesta con ejemplo de código: veredicto y explicación a la izquierda,
+   código a la derecha. En columna no cabía en los 1080px de alto. */
+.vf__respuesta--codigo {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 64px;
+  align-items: center;
+  text-align: left;
+}
+/* Con tres clases para ganarle a .codigo-slide--grande, que va después */
+.vf .codigo-slide.codigo-slide--vf {
+  padding: 32px 44px;
+  font-size: 32px;
+  line-height: 1.5;
+}
+/* Que "new Promise(...)" no se parta en dos líneas */
+.vf__respuesta--codigo .vf__codigo { white-space: nowrap; }
+
+/* Icono discreto encima de la etiqueta: dice de un vistazo qué tipo de
+   slide es (problema, solución, dato curioso, pregunta, V/F). Lleva la misma
+   opacidad que la etiqueta para no competir con la afirmación. */
+.icono {
+  display: block;
+  justify-self: center;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.6;
+}
+/* En los separadores de sección el título es enorme: el icono crece con él */
+.icono--seccion {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 40px;
+}
+/* El sprite de iconos (inicio de index.html) no ocupa sitio */
+.iconos {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 /* Código dentro del texto: monoespaciado, con su espaciado natural */
 .vf__codigo {
   font-family: var(--fuente-codigo);
@@ -588,6 +636,102 @@ html, body {
   font-weight: 500;
   letter-spacing: 0 !important;
 }
+
+/* 4j. Línea del tiempo: el contexto histórico del Event Loop. Cuatro hitos
+   en fila sobre una raya, cada uno es un paso .aparece. Se cuentan de
+   izquierda a derecha, como se lee el tiempo. */
+.linea {
+  text-align: left;
+  width: 1680px;
+}
+.linea__titulo {
+  font-size: 88px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-titulo);
+}
+.linea__hitos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 56px;
+  margin: 72px 0 0;
+  padding: 0;
+  list-style: none;
+  /* La raya que une los hitos, a la altura de los puntos: año (96) + margen
+     del punto (24) + medio punto (15) - media raya (3) = 132 */
+  background: linear-gradient(var(--tinta), var(--tinta)) 0 132px / 100% 6px no-repeat;
+}
+.linea__anio {
+  display: block;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--tracking-titulo);
+}
+.linea__punto {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 24px 0 32px;
+  border-radius: 50%;
+  background: var(--tinta);
+}
+.linea__texto {
+  display: block;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* 4k. Los demás lenguajes: una tabla de tres estrategias contra el bloqueo.
+   Es una rejilla y no un <table> para que cada fila pueda ser un paso
+   .aparece. Todas las filas van iguales, JavaScript incluida: Juan no
+   quiso resaltarla. */
+.lenguajes {
+  text-align: left;
+  width: 1680px;
+}
+.lenguajes__titulo {
+  font-size: 88px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-titulo);
+}
+.lenguajes__subtitulo {
+  margin-top: 16px !important;
+  font-size: 40px;
+  line-height: 1.3;
+  opacity: 0.72;
+}
+.lenguajes__tabla {
+  margin-top: 56px;
+  border-top: 6px solid var(--tinta);
+}
+.lenguajes__fila {
+  display: grid;
+  grid-template-columns: 400px 520px 1fr;
+  column-gap: 40px;
+  align-items: center;
+  padding: 30px 32px;
+  border-bottom: 3px solid var(--tinta);
+  font-size: 40px;
+  line-height: 1.3;
+}
+.lenguajes__fila--encabezado {
+  padding-block: 18px;
+  font-size: 30px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.lenguajes__estrategia {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: var(--tracking);
+}
+/* Aparecen en su sitio, sin deslizarse: la tabla no debe moverse */
+.lenguajes__fila.aparece { transform: none; }
 
 /* ---------- 5. Código ---------- */
 /* Bloque oscuro con resaltado de sintaxis estilo editor */

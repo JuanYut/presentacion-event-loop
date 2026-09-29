@@ -25,6 +25,36 @@
   class="animacion animacion--ancha" para las de 16:9.
 -->
 
+<!-- ICONOS
+  Sprite de iconos: cada uno se dibuja una vez aquí y las slides lo usan con
+  <svg class="icono"><use href="#icono-..."/></svg>. Van en línea y no en un
+  archivo para que funcionen con doble clic (file://) y sin internet. El trazo
+  es currentColor: toman el color de la slide, negro o amarillo. -->
+<svg class="iconos" aria-hidden="true">
+  <symbol id="icono-problema" viewBox="0 0 24 24">
+    <path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4"/><path d="M12 17v.01"/>
+  </symbol>
+  <symbol id="icono-solucion" viewBox="0 0 24 24">
+    <path d="M9 18h6"/><path d="M10 21h4"/>
+    <path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>
+  </symbol>
+  <symbol id="icono-curioso" viewBox="0 0 24 24">
+    <path d="M11 3.5l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8z"/><path d="M19 15v5"/><path d="M16.5 17.5h5"/>
+  </symbol>
+  <symbol id="icono-pregunta" viewBox="0 0 24 24">
+    <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.4A8.5 8.5 0 1 1 21 11.5z"/>
+    <path d="M9.9 9.2a2.3 2.3 0 0 1 4.4.9c0 1.5-2.3 2-2.3 3"/><path d="M12 15.6v.01"/>
+  </symbol>
+  <symbol id="icono-engrane" viewBox="0 0 24 24">
+    <path d="M10.29 4.59 L10.76 1.88 L13.24 1.88 L13.71 4.59 A7.6 7.6 0 0 1 16.03 5.55 L18.28 3.96 L20.04 5.72 L18.45 7.97 A7.6 7.6 0 0 1 19.41 10.29 L22.12 10.76 L22.12 13.24 L19.41 13.71 A7.6 7.6 0 0 1 18.45 16.03 L20.04 18.28 L18.28 20.04 L16.03 18.45 A7.6 7.6 0 0 1 13.71 19.41 L13.24 22.12 L10.76 22.12 L10.29 19.41 A7.6 7.6 0 0 1 7.97 18.45 L5.72 20.04 L3.96 18.28 L5.55 16.03 A7.6 7.6 0 0 1 4.59 13.71 L1.88 13.24 L1.88 10.76 L4.59 10.29 A7.6 7.6 0 0 1 5.55 7.97 L3.96 5.72 L5.72 3.96 L7.97 5.55 A7.6 7.6 0 0 1 10.29 4.59z"/>
+    <circle cx="12" cy="12" r="3.2"/>
+  </symbol>
+  <symbol id="icono-vf" viewBox="0 0 24 24">
+    <rect x="1.5" y="4.5" width="21" height="15" rx="3.5"/><path d="M12 4.5v15"/>
+    <path d="M4.3 12.2l2 2.1 3.4-4.2"/><path d="M15 9.5l5 5M20 9.5l-5 5"/>
+  </symbol>
+</svg>
+
 <div class="deck">
 
   <!-- ===== 1. Portada ===== -->
@@ -42,29 +72,111 @@
     </h1>
   </section>
 
-  <!-- ===== 2. Sección: ¿Qué es el Event Loop? ===== -->
-  <section class="slide slide--oscura slide--centrada">
-    <h2 class="seccion">
-      <span class="seccion__antetitulo">¿Qué es el</span>
-      <span class="seccion__titulo">Event Loop?</span>
-    </h2>
+  <!-- ===== 1b. Arranque en frío: ¿Qué se imprime? (sin respuesta) =====
+       Es el mismo código que el quiz del Ejemplo 2, pero aquí NO se revela:
+       se vota y se deja abierto. Es el gancho de la charla, que se cierra al
+       llegar al Ejemplo 2 ("¿Se acuerdan de esta?"). Por eso no lleva
+       .opcion__marca. -->
+  <section class="slide slide--quiz">
+    <div class="quiz__encabezado">
+      <p class="quiz__titulo">¿Qué se imprime?</p>
+      <p class="quiz__pista">Levanta la mano y guarda tu respuesta</p>
+    </div>
+<pre class="codigo-slide codigo-slide--grande"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"A"</span>);
+}, <span class="num">0</span>);
+
+Promise.<span class="fn">resolve</span>().<span class="fn">then</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"B"</span>);
+});
+
+console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
+    <div class="opciones">
+        <div class="opcion"><span class="opcion__numero">1</span>A, B, C</div>
+        <div class="opcion"><span class="opcion__numero">2</span>C, A, B</div>
+        <div class="opcion"><span class="opcion__numero">3</span>C, B, A</div>
+    </div>
   </section>
 
-  <!-- ===== 3. Qué es el Event Loop y por qué importa ===== -->
-  <section class="slide slide--texto">
-    <ul class="puntos">
-      <li class="aparece"><strong>JavaScript</strong> hace una sola cosa a la vez: tiene <strong>un solo hilo</strong>.</li>
-      <li class="aparece"><strong>El problema:</strong> si algo tarda (un timer, una petición al servidor), todo lo demás tendría que esperar.</li>
-      <li class="aparece"><strong>La solución:</strong> JS no espera. <strong>Delega</strong> lo que tarda, <strong>sigue con lo demás</strong> y lo <strong>retoma</strong> cuando ya está listo.</li>
-      <li class="aparece"><strong>¿Y quién decide cuándo retomarlo?</strong> El <strong>Event Loop</strong>: un <strong>ciclo eterno</strong> que revisa sin parar si hay algo listo para ejecutar.</li>
-      <li class="aparece">Gracias a él, JavaScript <strong>no se congela</strong> mientras espera.</li>
-      <li class="aparece">Y explica cosas "raras", como por qué <strong>setTimeout(fn, 0)</strong> no se ejecuta de inmediato, o por qué las <strong>Promises</strong> corren <strong>antes</strong> que los <strong>setTimeout</strong>.</li>
-    </ul>
+  <!-- ===== 1c. El problema =====
+       Problema → solución → quién lo resuelve → "Event Loop": una idea por
+       slide, para contarlo como historia. Reusan el aspecto de .vf (etiqueta
+       chica y afirmación grande); el detalle aparece con el siguiente clic. -->
+
+  <section class="slide slide--centrada slide--vf">
+    <div class="vf">
+      <svg class="icono"><use href="#icono-problema"/></svg>
+      <p class="vf__etiqueta">El problema</p>
+      <p class="vf__afirmacion">JavaScript hace una sola cosa<br>a la vez.</p>
+      <p class="vf__explicacion aparece">Si algo tarda (un timer, una petición al servidor),<br>todo lo demás se queda esperando y la página se congela.</p>
+    </div>
+  </section>
+
+  <!-- ===== 1d. La solución ===== -->
+  <section class="slide slide--centrada slide--vf">
+    <div class="vf">
+      <svg class="icono"><use href="#icono-solucion"/></svg>
+      <p class="vf__etiqueta">La solución</p>
+      <p class="vf__afirmacion">No esperar.</p>
+      <p class="vf__explicacion aparece">JS <strong>delega</strong> lo que tarda, <strong>sigue con lo demás</strong><br>y lo <strong>retoma</strong> cuando ya está listo.</p>
+    </div>
+  </section>
+
+  <!-- ===== 1e. Quién lo resuelve: la pregunta que presenta al protagonista ===== -->
+  <section class="slide slide--centrada">
+    <p class="frase frase--mediana">¿Y quién decide<br>cuándo retomarlo?</p>
+  </section>
+
+  <!-- ===== 2. El protagonista: solo el nombre, en grande =====
+       La definición (un ciclo eterno que revisa si hay algo listo para
+       ejecutar) se dice de palabra: la slide es la revelación, no la lección. -->
+  <section class="slide slide--oscura slide--centrada">
+    <h2 class="seccion"><span class="seccion__titulo">Event Loop</span></h2>
+  </section>
+
+  <!-- ===== 2b. Contexto: JS no inventó el Event Loop =====
+       Primera de las slides "Dato curioso" (aspecto .vf). Siembra una idea
+       que se cobra en el "¿Verdadero o falso?" de setTimeout: el navegador
+       le dio a JS el Event Loop... y no fue lo único que le dio. -->
+  <section class="slide slide--centrada slide--vf">
+    <div class="vf">
+      <svg class="icono"><use href="#icono-curioso"/></svg>
+      <p class="vf__etiqueta">Dato curioso</p>
+      <p class="vf__afirmacion">JavaScript no inventó<br>el Event Loop.</p>
+      <p class="vf__explicacion aparece">Lo <strong>heredó del navegador</strong>, que ya funcionaba con un bucle de eventos.<br>Y no fue lo único que heredó… ya lo verán.</p>
+    </div>
+  </section>
+
+  <!-- ===== 2c. Contexto: línea del tiempo =====
+       Solo fechas verificadas. El año en que HTML5 escribió el Event Loop en
+       su especificación no está claro, por eso no aparece. -->
+  <section class="slide slide--centrada">
+    <div class="linea">
+      <p class="linea__titulo">¿Cómo llegamos aquí?</p>
+      <ol class="linea__hitos">
+        <li class="linea__hito aparece">
+          <span class="linea__anio">1995</span><span class="linea__punto"></span>
+          <span class="linea__texto">Nace JavaScript en Netscape, <strong>dentro del navegador</strong>. Ya trae <strong>setTimeout</strong>.</span>
+        </li>
+        <li class="linea__hito aparece">
+          <span class="linea__anio">2009</span><span class="linea__punto"></span>
+          <span class="linea__texto"><strong>Node.js</strong> lleva el Event Loop fuera del navegador: al servidor.</span>
+        </li>
+        <li class="linea__hito aparece">
+          <span class="linea__anio">2015</span><span class="linea__punto"></span>
+          <span class="linea__texto">Llegan las <strong>Promises</strong> y, con ellas, una segunda cola: las <strong>microtasks</strong>.</span>
+        </li>
+        <li class="linea__hito aparece">
+          <span class="linea__anio">2017</span><span class="linea__punto"></span>
+          <span class="linea__texto"><strong>async/await</strong>: las mismas Promises, escritas como código normal.</span>
+        </li>
+      </ol>
+    </div>
   </section>
 
   <!-- ===== 4. Transición a los conceptos de JavaScript ===== -->
   <section class="slide slide--centrada">
-    <p class="frase frase--mediana">Vamos a explicar<br>algunas cositas<br>de JavaScript…</p>
+    <p class="frase frase--mediana">Para resolverlo,<br>primero 3 cosas<br>de JavaScript…</p>
   </section>
 
   <!-- ===== 5. JS es single-threaded ===== -->
@@ -86,7 +198,8 @@
        slide siguiente; aquí el clic solo muestra una pista, por si nadie se anima. -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
-      <p class="vf__etiqueta">Pregunta para ustedes</p>
+      <svg class="icono"><use href="#icono-pregunta"/></svg>
+      <p class="vf__etiqueta">Pregunta</p>
       <p class="vf__afirmacion">¿Cuál es la diferencia entre síncrono y asíncrono?</p>
       <div class="vf__respuesta aparece">
         <p class="vf__veredicto">Pista</p>
@@ -117,17 +230,70 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: el event loop y los callbacks"></iframe>
   </section>
 
+  <!-- ===== 9b. Contexto: ¿y los demás lenguajes? =====
+       Va aquí y no antes: el público ya sabe qué es un hilo y qué es
+       bloquear. Cada fila es un paso. -->
+  <section class="slide slide--centrada">
+    <div class="lenguajes">
+      <p class="lenguajes__titulo">¿Y los demás lenguajes?</p>
+      <p class="lenguajes__subtitulo">Casi todos son síncronos por defecto. Lo que cambia es cómo evitan quedarse bloqueados.</p>
+      <div class="lenguajes__tabla">
+        <div class="lenguajes__fila lenguajes__fila--encabezado">
+          <span>Estrategia</span><span>Lenguajes</span><span>La idea</span>
+        </div>
+        <div class="lenguajes__fila aparece">
+          <span class="lenguajes__estrategia">Varios hilos</span>
+          <span>Java, C#, C++</span>
+          <span>Lo que tarda se va a otro hilo. Paralelismo real… y bugs muy difíciles.</span>
+        </div>
+        <div class="lenguajes__fila aparece">
+          <span class="lenguajes__estrategia">Event Loop</span>
+          <span><strong>JavaScript</strong>, Python (asyncio), Rust (tokio)</span>
+          <span>Un solo hilo que no espera: delega y retoma.</span>
+        </div>
+        <div class="lenguajes__fila aparece">
+          <span class="lenguajes__estrategia">Hilos ligeros</span>
+          <span>Go, Elixir, Kotlin</span>
+          <span>Escribes código normal y el runtime reparte el trabajo.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9c. Lo especial de JavaScript ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <p class="frase frase--larga">En JavaScript, el Event Loop<br>no es opcional.</p>
+    <p class="remate aparece">Es el único camino. Por eso, si bloqueas el hilo,<br>se congela toda la página.</p>
+  </section>
+
+  <!-- ===== 9d. Dato curioso: async/await ===== -->
+  <section class="slide slide--centrada slide--vf">
+    <div class="vf">
+      <svg class="icono"><use href="#icono-curioso"/></svg>
+      <p class="vf__etiqueta">Dato curioso</p>
+      <p class="vf__afirmacion">async/await no nació<br>en JavaScript.</p>
+      <p class="vf__explicacion aparece">Lo popularizó <strong>C# en 2012</strong>.<br>De ahí lo copiaron JavaScript, Python, Rust y Swift.</p>
+    </div>
+  </section>
+
   <!-- ===== 10. Pausa para preguntas ===== -->
   <section class="slide slide--centrada">
     <p class="frase frase--mediana">¿Todo chido<br>hasta aquí? :)</p>
   </section>
 
-  <!-- ===== 11. Sección: Actores ===== -->
+  <!-- ===== 11. Sección: Los engranes del motor =====
+       Sigue la metáfora de la portada ("El Motor Invisible"): el Event Loop
+       es el motor y no trabaja solo. Él también sale en la rejilla: es el
+       engrane que hace girar a los demás. -->
   <section class="slide slide--oscura slide--centrada">
-    <h2 class="seccion"><span class="seccion__titulo seccion__titulo--enorme">ACTORES</span></h2>
+    <svg class="icono icono--seccion"><use href="#icono-engrane"/></svg>
+    <h2 class="seccion">
+      <span class="seccion__antetitulo">Los engranes</span>
+      <span class="seccion__titulo">del motor</span>
+    </h2>
   </section>
 
-  <!-- ===== 12. Actores: Call Stack ===== -->
+  <!-- ===== 12. Engranes: Call Stack ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor actor--activo">Call Stack</div>
@@ -152,7 +318,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la pila de llamadas"></iframe>
   </section>
 
-  <!-- ===== 14. Actores: Web APIs ===== -->
+  <!-- ===== 14. Engranes: Web APIs ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -165,11 +331,12 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
   <!-- ===== 15. ¿Verdadero o falso? (setTimeout) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
+      <svg class="icono"><use href="#icono-vf"/></svg>
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
       <p class="vf__afirmacion">“setTimeout es parte de JavaScript.”</p>
       <div class="vf__respuesta aparece">
         <p class="vf__veredicto">Falso.</p>
-        <p class="vf__explicacion">Es una <strong>Web API</strong>: la pone el navegador. JavaScript solo le pide que cuente el tiempo.</p>
+        <p class="vf__explicacion">Es una <strong>Web API</strong>: como el Event Loop, JS la <strong>heredó del navegador</strong>.<br>JavaScript solo le pide que cuente el tiempo.</p>
       </div>
     </div>
   </section>
@@ -195,7 +362,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: las cuatro categorías de Web APIs"></iframe>
   </section>
 
-  <!-- ===== 18. Actores: Colas de tareas ===== -->
+  <!-- ===== 18. Engranes: Colas de tareas ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -244,11 +411,24 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
   <!-- ===== 21. ¿Verdadero o falso? (Promises) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
+      <svg class="icono"><use href="#icono-vf"/></svg>
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
       <p class="vf__afirmacion">“Todo lo que está dentro de una Promise se ejecuta después.”</p>
-      <div class="vf__respuesta aparece">
-        <p class="vf__veredicto">Falso.</p>
-        <p class="vf__explicacion">Lo de dentro de <code class="vf__codigo">new Promise(...)</code> corre <strong>de inmediato</strong>. Solo lo del <code class="vf__codigo">.then</code> espera en la Microtask Queue.</p>
+      <!-- El ejemplo va al lado de la explicación y no debajo: debajo se
+           salía de la slide. Juan lo pidió MUY simple pero con el .then a
+           la vista. Los comentarios Sync/Async son la guía de Juan al explicar;
+           la salida (dentro, then) la dice él, no la slide. -->
+      <div class="vf__respuesta vf__respuesta--codigo aparece">
+        <div>
+          <p class="vf__veredicto">Falso.</p>
+          <p class="vf__explicacion">Lo de dentro de <code class="vf__codigo">new Promise(...)</code> corre <strong>de inmediato</strong>. Solo lo del <code class="vf__codigo">.then</code> espera en la Microtask Queue.</p>
+        </div>
+<pre class="codigo-slide codigo-slide--grande codigo-slide--vf"><span class="kw">new</span> <span class="fn">Promise</span>((resolve) <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"dentro"</span>); <span class="cm">// Sync</span>
+  <span class="fn">resolve</span>();
+}).<span class="fn">then</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"then"</span>);   <span class="cm">// Async</span>
+});</pre>
       </div>
     </div>
   </section>
@@ -276,7 +456,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la cola de microtasks y su prioridad"></iframe>
   </section>
 
-  <!-- ===== 23. Actores: Event Loop ===== -->
+  <!-- ===== 23. Engranes: Event Loop ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -300,14 +480,14 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: el bucle de eventos"></iframe>
   </section>
 
-  <!-- ===== 25. Resumen de los actores antes de los ejemplos =====
-       Misma rejilla que ACTORES. Los actores aparecen en el orden en que
+  <!-- ===== 25. Resumen de los engranes antes de los ejemplos =====
+       Misma rejilla que "Los engranes del motor". Aparecen en el orden en que
        trabajan (stack → Web APIs → colas → event loop), pero cada uno se
        queda en su posición de siempre: por eso el orden del HTML no es el
        visual y la posición va en --fila/--columna. -->
   <section class="slide slide--oscura slide--centrada">
     <div>
-      <p class="actores__titulo">¿Quién hace qué?</p>
+      <p class="actores__titulo">¿Qué hace cada engrane?</p>
       <div class="actores actores--resumen">
         <div class="actor aparece" style="--fila: 1; --columna: 1">
           <span>Call Stack</span>
@@ -368,11 +548,13 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
 
-  <!-- ===== 29. ¿Qué se imprime? (Ejemplo 2) ===== -->
+  <!-- ===== 29. ¿Qué se imprime? (Ejemplo 2) =====
+       Cierra el misterio del arranque en frío (1b): mismo código, ahora sí
+       con respuesta. -->
   <section class="slide slide--quiz">
     <div class="quiz__encabezado">
-      <p class="quiz__titulo">¿Qué se imprime?</p>
-      <p class="quiz__pista">Levanta la mano por tu respuesta</p>
+      <p class="quiz__titulo">¿Se acuerdan de esta?</p>
+      <p class="quiz__pista">¿Siguen con su respuesta?</p>
     </div>
 <pre class="codigo-slide codigo-slide--grande"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> {
   console.<span class="fn">log</span>(<span class="str">"A"</span>);
@@ -438,7 +620,7 @@ Promise.<span class="fn">resolve</span>()
   </section>
 
   <!-- ===== 34. Las 3 reglas del Event Loop =====
-       No repite "¿Quién hace qué?": resume el ORDEN, que es lo que resuelve
+       No repite "¿Qué hace cada engrane?": resume el ORDEN, que es lo que resuelve
        cualquier "¿qué se imprime?". -->
   <section class="slide slide--texto">
     <div class="resumen">
