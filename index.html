@@ -81,17 +81,7 @@
             title="Animación: las instrucciones se ejecutan en orden, una tras otra"></iframe>
   </section>
 
-  <!-- ===== 7. Asincronía con el Event Loop ===== -->
-  <section class="slide slide--partida">
-    <div>
-      <p class="texto"><strong>JS maneja asincronía con el Event Loop:</strong><br>Los callbacks esperan a que el hilo esté libre</p>
-      <p class="nota">Callback: Una FN que pasas a otra FN para que esa la ejecute después</p>
-    </div>
-    <iframe class="animacion" data-src="animaciones/03-event-loop-callbacks.html"
-            title="Animación: el event loop y los callbacks"></iframe>
-  </section>
-
-  <!-- ===== 8. Pregunta al público: síncrono vs asíncrono =====
+  <!-- ===== 7. Pregunta al público: síncrono vs asíncrono =====
        Reusa el aspecto de "¿Verdadero o falso?" (.vf). La respuesta la da la
        slide siguiente; aquí el clic solo muestra una pista, por si nadie se anima. -->
   <section class="slide slide--centrada slide--vf">
@@ -106,7 +96,7 @@
     </div>
   </section>
 
-  <!-- ===== 9. Síncrono vs asíncrono ===== -->
+  <!-- ===== 8. Síncrono vs asíncrono ===== -->
   <section class="slide slide--comparacion">
     <p class="texto"><strong>Síncrono:</strong><br>Código que se ejecuta línea por línea, al instante. Bloquea, porque espera a que todo termine.</p>
 <pre class="codigo-slide">console.<span class="fn">log</span>(<span class="str">'1'</span>);
@@ -115,6 +105,16 @@ console.<span class="fn">log</span>(<span class="str">'2'</span>);  <span class=
 <pre class="codigo-slide"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> console.<span class="fn">log</span>(<span class="str">'2'</span>), <span class="num">0</span>);
 console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class="cm">// No espera a setTimeout</span>
 <span class="cm aparece">// Output: 1, 2</span></pre>
+  </section>
+
+  <!-- ===== 9. Asincronía con el Event Loop ===== -->
+  <section class="slide slide--partida">
+    <div>
+      <p class="texto"><strong>JS maneja asincronía con el Event Loop:</strong><br>Los callbacks esperan a que el hilo esté libre</p>
+      <p class="nota">Callback: Una FN que pasas a otra FN para que esa la ejecute después</p>
+    </div>
+    <iframe class="animacion" data-src="animaciones/03-event-loop-callbacks.html"
+            title="Animación: el event loop y los callbacks"></iframe>
   </section>
 
   <!-- ===== 10. Pausa para preguntas ===== -->
@@ -152,31 +152,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la pila de llamadas"></iframe>
   </section>
 
-  <!-- ===== 14. Actores: Event Loop ===== -->
-  <section class="slide slide--oscura slide--centrada">
-    <div class="actores">
-      <div class="actor">Call Stack</div>
-      <div class="actor actor--activo">Event Loop</div>
-      <div class="actor">Web APIs</div>
-      <div class="actor">Colas de tareas<br>(Micro y Macro)</div>
-    </div>
-  </section>
-
-  <!-- ===== 15. Event Loop ===== -->
-  <section class="slide slide--partida slide--partida-ancha">
-    <div class="lista">
-      <p><strong>Event Loop:</strong></p>
-      <ul>
-        <li class="aparece">Ciclo eterno que revisa si el Call Stack está vacío.</li>
-        <li class="aparece">Es el vigilante que coordina TODO.</li>
-        <li class="aparece">Sin él, JavaScript no sería asíncrono.</li>
-      </ul>
-    </div>
-    <iframe class="animacion" data-src="animaciones/05-event-loop.html"
-            title="Animación: el bucle de eventos"></iframe>
-  </section>
-
-  <!-- ===== 16. Actores: Web APIs ===== -->
+  <!-- ===== 14. Actores: Web APIs ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -186,7 +162,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 17. ¿Verdadero o falso? (setTimeout) ===== -->
+  <!-- ===== 15. ¿Verdadero o falso? (setTimeout) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
@@ -198,7 +174,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 18. Web APIs ===== -->
+  <!-- ===== 16. Web APIs ===== -->
   <section class="slide slide--partida slide--partida-ancha">
     <div class="lista">
       <p><strong>Web APIs:</strong></p>
@@ -212,14 +188,14 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: las Web APIs del navegador"></iframe>
   </section>
 
-  <!-- ===== 19. Categorías de Web APIs ===== -->
+  <!-- ===== 17. Categorías de Web APIs ===== -->
   <section class="slide slide--partida slide--partida-media">
     <p class="encabezado-lateral">4 categorías importantes de Web APIs:</p>
     <iframe class="animacion" data-src="animaciones/07-web-apis-categorias.html"
             title="Animación: las cuatro categorías de Web APIs"></iframe>
   </section>
 
-  <!-- ===== 20. Actores: Colas de tareas ===== -->
+  <!-- ===== 18. Actores: Colas de tareas ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="actores">
       <div class="actor">Call Stack</div>
@@ -229,7 +205,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 21. ¿Qué va en las colas? (abre la sección de Micro y Macrotask) ===== -->
+  <!-- ===== 19. ¿Qué va en las colas? (abre la sección de Micro y Macrotask) ===== -->
   <section class="slide slide--texto">
     <div class="resumen">
       <p class="resumen__titulo">¿Qué va en las colas?</p>
@@ -241,7 +217,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 22. Macrotask Queue ===== -->
+  <!-- ===== 20. Macrotask Queue ===== -->
   <section class="slide slide--partida slide--partida-cola">
     <div class="cola">
       <p class="cola__alias">Callback queue</p>
@@ -265,7 +241,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la cola de macrotasks"></iframe>
   </section>
 
-  <!-- ===== 23. ¿Verdadero o falso? (Promises) ===== -->
+  <!-- ===== 21. ¿Verdadero o falso? (Promises) ===== -->
   <section class="slide slide--centrada slide--vf">
     <div class="vf">
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
@@ -277,7 +253,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 24. Microtask Queue ===== -->
+  <!-- ===== 22. Microtask Queue ===== -->
   <section class="slide slide--partida slide--partida-cola">
     <div class="cola">
       <p class="cola__titulo">Microtask Queue:</p>
@@ -298,6 +274,30 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
     <iframe class="animacion" data-src="animaciones/09-microtask-queue.html"
             title="Animación: la cola de microtasks y su prioridad"></iframe>
+  </section>
+
+  <!-- ===== 23. Actores: Event Loop ===== -->
+  <section class="slide slide--oscura slide--centrada">
+    <div class="actores">
+      <div class="actor">Call Stack</div>
+      <div class="actor actor--activo">Event Loop</div>
+      <div class="actor">Web APIs</div>
+      <div class="actor">Colas de tareas<br>(Micro y Macro)</div>
+    </div>
+  </section>
+
+  <!-- ===== 24. Event Loop ===== -->
+  <section class="slide slide--partida slide--partida-ancha">
+    <div class="lista">
+      <p><strong>Event Loop:</strong></p>
+      <ul>
+        <li class="aparece">Ciclo eterno que revisa si el Call Stack está vacío.</li>
+        <li class="aparece">Es el vigilante que coordina TODO.</li>
+        <li class="aparece">Sin él, JavaScript no sería asíncrono.</li>
+      </ul>
+    </div>
+    <iframe class="animacion" data-src="animaciones/05-event-loop.html"
+            title="Animación: el bucle de eventos"></iframe>
   </section>
 
   <!-- ===== 25. Resumen de los actores antes de los ejemplos =====
