@@ -266,31 +266,104 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     charla no se quede sin ella.
   -->
 
-  <!-- ===== 23. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
+  <!-- ===== 23. ¿Qué se imprime? (Ejemplo 1) ===== -->
+  <section class="slide slide--quiz">
+    <div class="quiz__encabezado">
+      <p class="quiz__titulo">¿Qué se imprime?</p>
+      <p class="quiz__pista">Levanta la mano por tu respuesta</p>
+    </div>
+<pre class="codigo-slide codigo-slide--grande">console.<span class="fn">log</span>(<span class="str">"A"</span>);
+
+<span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"B"</span>);
+}, <span class="num">0</span>);
+
+console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
+    <div class="opciones">
+        <div class="opcion"><span class="opcion__numero">1</span>A, B, C</div>
+        <div class="opcion"><span class="opcion__numero">2</span>A, C, B
+          <span class="opcion__marca aparece"><span class="opcion__numero">2</span>A, C, B<span class="opcion__check">✓</span></span>
+        </div>
+        <div class="opcion"><span class="opcion__numero">3</span>B, A, C</div>
+    </div>
+  </section>
+
+  <!-- ===== 24. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
 
-  <!-- ===== 24. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
+  <!-- ===== 25. ¿Qué se imprime? (Ejemplo 2) ===== -->
+  <section class="slide slide--quiz">
+    <div class="quiz__encabezado">
+      <p class="quiz__titulo">¿Qué se imprime?</p>
+      <p class="quiz__pista">Levanta la mano por tu respuesta</p>
+    </div>
+<pre class="codigo-slide codigo-slide--grande"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"A"</span>);
+}, <span class="num">0</span>);
+
+Promise.<span class="fn">resolve</span>().<span class="fn">then</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"B"</span>);
+});
+
+console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
+    <div class="opciones">
+        <div class="opcion"><span class="opcion__numero">1</span>A, B, C</div>
+        <div class="opcion"><span class="opcion__numero">2</span>C, A, B</div>
+        <div class="opcion"><span class="opcion__numero">3</span>C, B, A
+          <span class="opcion__marca aparece"><span class="opcion__numero">3</span>C, B, A<span class="opcion__check">✓</span></span>
+        </div>
+    </div>
+  </section>
+
+  <!-- ===== 26. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/11-ejemplo-promise.html"
             title="Animación: setTimeout contra Promise, la microtask va primero"></iframe>
   </section>
 
-  <!-- ===== 25. Ejemplo 3: Promesas encadenadas (16:9) =====
+  <!-- ===== 27. ¿Qué se imprime? (Ejemplo 3) =====
+       OCULTA junto con el Ejemplo 3: quita "oculta" para volver a mostrarla -->
+  <section class="slide slide--quiz oculta">
+    <div class="quiz__encabezado">
+      <p class="quiz__titulo">¿Qué se imprime?</p>
+      <p class="quiz__pista">Levanta la mano por tu respuesta</p>
+    </div>
+<pre class="codigo-slide codigo-slide--grande"><span class="fn">setTimeout</span>(() <span class="kw">=&gt;</span> {
+  console.<span class="fn">log</span>(<span class="str">"A"</span>);
+}, <span class="num">0</span>);
+
+Promise.<span class="fn">resolve</span>()
+  .<span class="fn">then</span>(() <span class="kw">=&gt;</span> {
+    console.<span class="fn">log</span>(<span class="str">"B"</span>);
+  })
+  .<span class="fn">then</span>(() <span class="kw">=&gt;</span> {
+    console.<span class="fn">log</span>(<span class="str">"C"</span>);
+  });</pre>
+    <div class="opciones">
+        <div class="opcion"><span class="opcion__numero">1</span>A, B, C</div>
+        <div class="opcion"><span class="opcion__numero">2</span>B, A, C</div>
+        <div class="opcion"><span class="opcion__numero">3</span>B, C, A
+          <span class="opcion__marca aparece"><span class="opcion__numero">3</span>B, C, A<span class="opcion__check">✓</span></span>
+        </div>
+    </div>
+  </section>
+
+  <!-- ===== 28. Ejemplo 3: Promesas encadenadas (16:9) =====
        OCULTA para acortar la charla: quita "oculta" de la clase para volver a mostrarla -->
   <section class="slide slide--oscura slide--lienzo oculta">
     <iframe class="animacion animacion--ancha" data-src="animaciones/12-ejemplo-promesas-encadenadas.html"
             title="Animación: promesas encadenadas, una microtask encola otra en el mismo ciclo"></iframe>
   </section>
 
-  <!-- ===== 26. Del ejemplo a la vida real ===== -->
+  <!-- ===== 29. Del ejemplo a la vida real ===== -->
   <section class="slide slide--oscura slide--centrada">
     <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
-  <!-- ===== 27. Resumen de la charla ===== -->
+  <!-- ===== 30. Resumen de la charla ===== -->
   <section class="slide slide--texto">
     <div class="resumen">
       <p class="resumen__titulo">En resumen:</p>
@@ -303,7 +376,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 28. Respuesta a la slide 2 ("qué aburrido") ===== -->
+  <!-- ===== 31. Respuesta a la slide 2 ("qué aburrido") ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div>
       <p class="frase frase--mediana">¿Aburrido? Tal vez.</p>
@@ -311,7 +384,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 29. Cierre emocional: la IA y entender ===== -->
+  <!-- ===== 32. Cierre emocional: la IA y entender ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="final">
       <p class="final__linea">Hoy la IA escribe código en segundos.</p>
@@ -320,7 +393,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 30. Cierre emocional: el ciclo eterno ===== -->
+  <!-- ===== 33. Cierre emocional: el ciclo eterno ===== -->
   <section class="slide slide--centrada">
     <div class="final">
       <p class="frase frase--mediana">El Event Loop<br>nunca se detiene.</p>
@@ -328,14 +401,14 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 31. Cierre ===== -->
+  <!-- ===== 34. Cierre ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__antetitulo seccion__antetitulo--cierre">Gracias wdt :)</span></h2>
   </section>
 
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
   <div class="barra"><div class="barra__progreso"></div></div>
-  <div class="contador">1 / 30</div>
+  <div class="contador">1 / 32</div>
 
   <!-- Barra de control de la animación: deck.js la coloca debajo del iframe
        de la slide actual y la esconde en las slides sin animación -->

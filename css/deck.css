@@ -453,6 +453,67 @@ html, body {
   color: var(--tinta);
 }
 
+/* 4h. ¿Qué se imprime?: el público adivina antes de ver cada ejemplo.
+   Título arriba, código a la izquierda y tres opciones a la derecha. Las
+   opciones van numeradas (1, 2, 3) y no con letras, porque A, B y C ya son
+   lo que imprime el código. */
+.slide--quiz {
+  display: grid;
+  grid-template-columns: 880px 560px;
+  column-gap: 110px;
+  row-gap: 56px;
+  justify-content: center;
+  align-content: center;
+}
+.quiz__encabezado { grid-column: 1 / -1; }
+.quiz__titulo {
+  font-size: 88px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.quiz__pista {
+  margin-top: 10px !important;
+  font-size: 36px;
+  line-height: 1.2;
+  opacity: 0.72;
+}
+.opciones {
+  display: grid;
+  gap: 28px;
+  align-self: center;
+}
+.opcion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 120px;
+  padding: 0 36px;
+  border: 6px solid var(--tinta);
+  border-radius: 20px;
+  font-size: 56px;
+  font-weight: 700;
+}
+.opcion__numero {
+  font-size: 40px;
+  opacity: 0.55;
+}
+/* La respuesta correcta: una capa rellena que aparece encima con el
+   siguiente clic (es un paso .aparece). Aparece en su sitio, sin deslizarse. */
+.opcion__marca {
+  position: absolute;
+  inset: -6px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 42px;
+  border-radius: 20px;
+  background: var(--tinta);
+  color: var(--amarillo);
+}
+.opcion__marca.aparece { transform: none; }
+.opcion__check { margin-left: auto; }
+
 /* ---------- 5. Código ---------- */
 /* Bloque oscuro con resaltado de sintaxis estilo editor */
 .codigo-slide {
@@ -478,6 +539,16 @@ html, body {
 .codigo-slide .num { color: #56b6c2; }   /* números */
 .codigo-slide .kw  { color: #c678dd; }   /* palabras clave y => */
 .codigo-slide .cm  { color: #7f848e; }   /* comentarios */
+
+/* Versión grande para las slides "¿Qué se imprime?": se lee de lejos */
+.codigo-slide.codigo-slide--grande {
+  align-self: center;
+  justify-self: stretch;
+  padding: 36px 44px;
+  font-size: 34px;
+  line-height: 1.55;
+  border-radius: 20px;
+}
 
 /* ---------- 6. Animaciones embebidas ---------- */
 /* El iframe carga la animación tal cual: controls.js dentro de ella escala su
