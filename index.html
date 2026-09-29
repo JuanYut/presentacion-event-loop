@@ -58,12 +58,12 @@
   <!-- ===== 4. Qué es el Event Loop y por qué importa ===== -->
   <section class="slide slide--texto">
     <ul class="puntos">
-      <li class="aparece"><strong>Qué es:</strong> un <strong>ciclo eterno</strong> que tiene <strong>JavaScript</strong>, siempre revisando si hay algo por hacer.</li>
-      <li class="aparece"><strong>Permite:</strong> que <strong>JavaScript</strong> no se congele mientras espera.</li>
-      <li class="aparece"><strong>JS</strong> hace una sola cosa a la vez.</li>
-      <li class="aparece"><strong>Pero cuando algo va a tardar, no se queda esperando:</strong> lo delega, sigue trabajando en lo demás, y lo retoma cuando ya está listo.</li>
-      <li class="aparece">Ese <strong>"retomarlo en el momento correcto"</strong> es el <strong>event loop.</strong></li>
-      <li class="aparece"><strong>Por qué importa:</strong> explica por qué <strong>setTimeout(fn, 0)</strong> no se ejecuta de inmediato, y por qué las <strong>Promises</strong> corren <strong>antes</strong> que los <strong>setTimeout.</strong></li>
+      <li class="aparece"><strong>JavaScript</strong> hace una sola cosa a la vez: tiene <strong>un solo hilo</strong>.</li>
+      <li class="aparece"><strong>El problema:</strong> si algo tarda (un timer, una petición al servidor), todo lo demás tendría que esperar.</li>
+      <li class="aparece"><strong>La solución:</strong> JS no espera. <strong>Delega</strong> lo que tarda, <strong>sigue con lo demás</strong> y lo <strong>retoma</strong> cuando ya está listo.</li>
+      <li class="aparece"><strong>¿Y quién decide cuándo retomarlo?</strong> El <strong>Event Loop</strong>: un <strong>ciclo eterno</strong> que revisa sin parar si hay algo listo para ejecutar.</li>
+      <li class="aparece">Gracias a él, JavaScript <strong>no se congela</strong> mientras espera.</li>
+      <li class="aparece">Y explica cosas "raras", como por qué <strong>setTimeout(fn, 0)</strong> no se ejecuta de inmediato, o por qué las <strong>Promises</strong> corren <strong>antes</strong> que los <strong>setTimeout</strong>.</li>
     </ul>
   </section>
 
