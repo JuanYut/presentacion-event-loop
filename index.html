@@ -301,7 +301,36 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
             title="Animación: la cola de microtasks y su prioridad"></iframe>
   </section>
 
-  <!-- ===== 25. Sección: Ejemplos ===== -->
+  <!-- ===== 25. Resumen de los actores antes de los ejemplos =====
+       Misma rejilla que ACTORES. Los actores aparecen en el orden en que
+       trabajan (stack → Web APIs → colas → event loop), pero cada uno se
+       queda en su posición de siempre: por eso el orden del HTML no es el
+       visual y la posición va en --fila/--columna. -->
+  <section class="slide slide--oscura slide--centrada">
+    <div>
+      <p class="actores__titulo">¿Quién hace qué?</p>
+      <div class="actores actores--resumen">
+        <div class="actor aparece" style="--fila: 1; --columna: 1">
+          <span>Call Stack</span>
+          <span class="actor__rol">Ejecuta el código, una cosa a la vez.</span>
+        </div>
+        <div class="actor aparece" style="--fila: 2; --columna: 1">
+          <span>Web APIs</span>
+          <span class="actor__rol">Se encargan de lo que tarda: timers, fetch, eventos.</span>
+        </div>
+        <div class="actor aparece" style="--fila: 2; --columna: 2">
+          <span>Colas de tareas</span>
+          <span class="actor__rol">Guardan los callbacks listos. Primero micro, luego macro.</span>
+        </div>
+        <div class="actor aparece" style="--fila: 1; --columna: 2">
+          <span>Event Loop</span>
+          <span class="actor__rol">Si el Call Stack está vacío, le pasa el siguiente callback.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 26. Sección: Ejemplos ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__titulo seccion__titulo--ejemplos">Ejemplos</span></h2>
   </section>
@@ -312,7 +341,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     charla no se quede sin ella.
   -->
 
-  <!-- ===== 26. ¿Qué se imprime? (Ejemplo 1) ===== -->
+  <!-- ===== 27. ¿Qué se imprime? (Ejemplo 1) ===== -->
   <section class="slide slide--quiz">
     <div class="quiz__encabezado">
       <p class="quiz__titulo">¿Qué se imprime?</p>
@@ -334,13 +363,13 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     </div>
   </section>
 
-  <!-- ===== 27. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
+  <!-- ===== 28. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
 
-  <!-- ===== 28. ¿Qué se imprime? (Ejemplo 2) ===== -->
+  <!-- ===== 29. ¿Qué se imprime? (Ejemplo 2) ===== -->
   <section class="slide slide--quiz">
     <div class="quiz__encabezado">
       <p class="quiz__titulo">¿Qué se imprime?</p>
@@ -364,13 +393,13 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     </div>
   </section>
 
-  <!-- ===== 29. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
+  <!-- ===== 30. Ejemplo 2: setTimeout vs Promise (16:9) ===== -->
   <section class="slide slide--oscura slide--lienzo">
     <iframe class="animacion animacion--ancha" data-src="animaciones/11-ejemplo-promise.html"
             title="Animación: setTimeout contra Promise, la microtask va primero"></iframe>
   </section>
 
-  <!-- ===== 30. ¿Qué se imprime? (Ejemplo 3) =====
+  <!-- ===== 31. ¿Qué se imprime? (Ejemplo 3) =====
        OCULTA junto con el Ejemplo 3: quita "oculta" para volver a mostrarla -->
   <section class="slide slide--quiz oculta">
     <div class="quiz__encabezado">
@@ -397,19 +426,19 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 31. Ejemplo 3: Promesas encadenadas (16:9) =====
+  <!-- ===== 32. Ejemplo 3: Promesas encadenadas (16:9) =====
        OCULTA para acortar la charla: quita "oculta" de la clase para volver a mostrarla -->
   <section class="slide slide--oscura slide--lienzo oculta">
     <iframe class="animacion animacion--ancha" data-src="animaciones/12-ejemplo-promesas-encadenadas.html"
             title="Animación: promesas encadenadas, una microtask encola otra en el mismo ciclo"></iframe>
   </section>
 
-  <!-- ===== 32. Del ejemplo a la vida real ===== -->
+  <!-- ===== 33. Del ejemplo a la vida real ===== -->
   <section class="slide slide--oscura slide--centrada">
     <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
-  <!-- ===== 33. Resumen de la charla ===== -->
+  <!-- ===== 34. Resumen de la charla ===== -->
   <section class="slide slide--texto">
     <div class="resumen">
       <p class="resumen__titulo">En resumen:</p>
@@ -422,7 +451,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 34. "¿Aburrido? Tal vez." (antes respondía a la broma de apertura, ya quitada) ===== -->
+  <!-- ===== 35. "¿Aburrido? Tal vez." (antes respondía a la broma de apertura, ya quitada) ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div>
       <p class="frase frase--mediana">¿Aburrido? Tal vez.</p>
@@ -430,7 +459,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 35. Cierre emocional: la IA y entender ===== -->
+  <!-- ===== 36. Cierre emocional: la IA y entender ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="final">
       <p class="final__linea">Hoy la IA escribe código en segundos.</p>
@@ -439,7 +468,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 36. Cierre emocional: el ciclo eterno ===== -->
+  <!-- ===== 37. Cierre emocional: el ciclo eterno ===== -->
   <section class="slide slide--centrada">
     <div class="final">
       <p class="frase frase--mediana">El Event Loop<br>nunca se detiene.</p>
@@ -447,14 +476,14 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 37. Cierre ===== -->
+  <!-- ===== 38. Cierre ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__antetitulo seccion__antetitulo--cierre">Gracias wdt :)</span></h2>
   </section>
 
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
   <div class="barra"><div class="barra__progreso"></div></div>
-  <div class="contador">1 / 35</div>
+  <div class="contador">1 / 36</div>
 
   <!-- Barra de control de la animación: deck.js la coloca debajo del iframe
        de la slide actual y la esconde en las slides sin animación -->
