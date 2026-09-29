@@ -201,52 +201,62 @@ siguiente macrotask.
 
 ## Estado actual
 
-La charla está completa: 38 slides en el HTML, 36 visibles (2 ocultas).
+La charla está completa: 37 slides en el HTML, 35 visibles (2 ocultas).
 Esta lista va **por títulos y en orden**, no por número: los números cambian
 cada vez que se agrega o se quita una slide. Lo marcado con (C) lo hizo
 Claude sin diseño de Juan; el resto sale de sus diseños.
 
 1. Portada (avatar que flota y brillo en "Event Loop")
 2. Sección "¿Qué es el Event Loop?"
-3. La historia del Event Loop, en bullets por pasos. Juan pidió reescribirla
-   porque con la versión anterior "hasta yo me confundo al leerla": ahora va
-   un solo hilo → el problema → la solución → quién decide cuándo retomar
-   (el Event Loop) → qué se gana
+3. La historia del Event Loop, en bullets por pasos: un solo hilo → el
+   problema → la solución → quién decide cuándo retomar (el Event Loop) → qué
+   se gana. Su último bullet promete lo que resuelven los Ejemplos 1 y 2
 4. (C) "Vamos a explicar algunas cositas de JavaScript…"
-5. Single-threaded, síncrono y asincronía con el Event Loop (con animaciones)
+5. Single-threaded y síncrono (con animaciones)
 6. (C) Pregunta abierta: "¿Cuál es la diferencia entre síncrono y asíncrono?",
    con pista (una llamada vs un WhatsApp)
-7. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic, para
-   preguntar antes qué se imprime
-8. "¿Todo chido hasta aquí? :)", sección ACTORES y Call Stack
-9. Event Loop, y Web APIs precedido de (C) "¿Verdadero o falso? setTimeout es
-   parte de JavaScript" (falso). Luego las 4 categorías de Web APIs
-10. Actores: colas. (C) "¿Qué va en las colas?": todo lo que llega a las colas
-    es código asíncrono, pero lo que espera es el callback, no la llamada
-11. Macrotask Queue, (C) "¿Verdadero o falso? Todo lo que está dentro de una
-    Promise se ejecuta después" (falso), y Microtask Queue
-12. (C) "¿Quién hace qué?": la rejilla de ACTORES con el papel de cada uno
-    en una línea, como repaso antes de los ejemplos. Aparecen en el orden en
-    que trabajan (stack → Web APIs → colas → event loop), cada uno en su sitio
-13. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
+7. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic
+8. Asincronía con el Event Loop y qué es un callback (con animación). Va
+   DESPUÉS de síncrono vs asíncrono: primero qué es asíncrono, luego cómo lo hace JS
+9. "¿Todo chido hasta aquí? :)" y sección ACTORES
+10. Call Stack
+11. Web APIs: (C) "¿Verdadero o falso? setTimeout es parte de JavaScript"
+    (falso), Web APIs y las 4 categorías
+12. Colas: (C) "¿Qué va en las colas?", Macrotask Queue, (C) "¿Verdadero o
+    falso? Todo lo que está dentro de una Promise se ejecuta después" (falso)
+    y Microtask Queue
+13. Event Loop, **al final de los actores**: su trabajo es mover callbacks de
+    las colas al stack, así que se explica cuando ya se conocen las colas.
+    Es el orden en que viaja el código, el mismo de "¿Quién hace qué?"
+14. (C) "¿Quién hace qué?": la rejilla de ACTORES con el papel de cada uno,
+    como repaso antes de los ejemplos
+15. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
     animación. Ejemplos 2 y 3 son (C) sobre el molde. **El Ejemplo 3 y su quiz
     están ocultos** (`oculta`): Juan lo quitó para acortar
-14. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
-    Antes era una lista de bugs ("¿Te ha pasado?") que no le convenció
-15. (C) "En resumen"
-16. (C) "¿Aburrido? Tal vez.": respondía a la broma de apertura ("¿Event
-    Loop?, ¿neta, wey?, qué aburrido"), que Juan quitó para ahorrar tiempo;
-    ahora se sostiene sola
-17. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
+16. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
+17. (C) "Las 3 reglas del Event Loop": síncrono → todas las microtasks → una
+    macrotask. Reemplaza a "En resumen", que repetía "¿Quién hace qué?"
+18. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
     fierros. Sé esa persona." (negra) y "El Event Loop nunca se detiene. Que
     tu curiosidad tampoco." (amarilla)
-18. "Gracias wdt :)"
+19. "Gracias wdt :)"
+
+Se quitaron, a pedido de Juan: la broma de apertura ("¿Event Loop?, ¿neta,
+wey?, qué aburrido") y su respuesta del final ("¿Aburrido? Tal vez."), para
+ahorrar tiempo; una lista de bugs ("¿Te ha pasado?"); y una demo que
+congelaba la página 3 s.
+
+**Precisión técnica** (revisado en un análisis de la charla): `fetch` NO va
+en los ejemplos de macrotasks (es una Web API, pero su `.then` es una
+microtask), ni en la animación 08 (ahí dice `keydown`). `Promise.finally` no
+existe: es `Promise.resolve().finally(...)`.
 
 **Ritmo de participación.** Juan pidió "más emoción". Las preguntas al
 público ("¿Qué se imprime?", "¿Verdadero o falso?", la pregunta abierta) se
 reparten para que participe cada 5 o 6 slides, sobre todo en el tramo largo
-de conceptos. Se probó y se quitó una demo que congelaba la página 3 s: no
-le convenció.
+de conceptos. Como ya no hay broma de apertura, la charla abre con una
+pregunta de palabra: "¿Quién ha escuchado del Event Loop? ¿Y quién podría
+explicarlo?".
 
 ### Pendiente
 
