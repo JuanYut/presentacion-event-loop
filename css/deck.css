@@ -86,6 +86,8 @@ html, body {
   opacity: 1;
   visibility: visible;
 }
+/* Slide sacada de la charla sin borrarla (ver deck.js) */
+.slide.oculta { display: none; }
 
 /* letter-spacing en em se hereda ya convertido a píxeles, así que un título
    de 360px le pasaría su espaciado a un texto de 36px. Declararlo en cada
