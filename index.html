@@ -437,28 +437,21 @@ Promise.<span class="fn">resolve</span>()
     <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
-  <!-- ===== 34. Resumen de la charla ===== -->
+  <!-- ===== 34. Las 3 reglas del Event Loop =====
+       No repite "¿Quién hace qué?": resume el ORDEN, que es lo que resuelve
+       cualquier "¿qué se imprime?". -->
   <section class="slide slide--texto">
     <div class="resumen">
-      <p class="resumen__titulo">En resumen:</p>
-      <ul class="puntos">
-        <li class="aparece"><strong>JavaScript</strong> hace una sola cosa a la vez: tiene <strong>un solo hilo</strong>.</li>
-        <li class="aparece">Lo que tarda se <strong>delega</strong> a las <strong>Web APIs</strong>, y JS sigue con lo demás.</li>
-        <li class="aparece">El <strong>Event Loop</strong> es el ciclo eterno que decide <strong>qué se ejecuta y cuándo</strong>.</li>
-        <li class="aparece">Primero <strong>todas las microtasks</strong> (Promises), luego <strong>una macrotask</strong> (setTimeout, eventos) por ciclo.</li>
-      </ul>
+      <p class="resumen__titulo">Las 3 reglas del Event Loop</p>
+      <ol class="puntos">
+        <li class="aparece">Primero se ejecuta <strong>todo el código síncrono</strong>.</li>
+        <li class="aparece">Luego, <strong>todas las microtasks</strong> (Promises), hasta vaciar la cola.</li>
+        <li class="aparece">Luego, <strong>una macrotask</strong> (setTimeout, eventos)… y vuelta a empezar.</li>
+      </ol>
     </div>
   </section>
 
-  <!-- ===== 35. "¿Aburrido? Tal vez." (antes respondía a la broma de apertura, ya quitada) ===== -->
-  <section class="slide slide--oscura slide--centrada">
-    <div>
-      <p class="frase frase--mediana">¿Aburrido? Tal vez.</p>
-      <p class="remate aparece">Pero está detrás de cada clic,<br>cada fetch y cada app que usas.</p>
-    </div>
-  </section>
-
-  <!-- ===== 36. Cierre emocional: la IA y entender ===== -->
+  <!-- ===== 35. Cierre emocional: la IA y entender ===== -->
   <section class="slide slide--oscura slide--centrada">
     <div class="final">
       <p class="final__linea">Hoy la IA escribe código en segundos.</p>
@@ -467,7 +460,7 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 37. Cierre emocional: el ciclo eterno ===== -->
+  <!-- ===== 36. Cierre emocional: el ciclo eterno ===== -->
   <section class="slide slide--centrada">
     <div class="final">
       <p class="frase frase--mediana">El Event Loop<br>nunca se detiene.</p>
@@ -475,14 +468,14 @@ Promise.<span class="fn">resolve</span>()
     </div>
   </section>
 
-  <!-- ===== 38. Cierre ===== -->
+  <!-- ===== 37. Cierre ===== -->
   <section class="slide slide--oscura slide--centrada">
     <h2 class="seccion"><span class="seccion__antetitulo seccion__antetitulo--cierre">Gracias wdt :)</span></h2>
   </section>
 
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
   <div class="barra"><div class="barra__progreso"></div></div>
-  <div class="contador">1 / 36</div>
+  <div class="contador">1 / 35</div>
 
   <!-- Barra de control de la animación: deck.js la coloca debajo del iframe
        de la slide actual y la esconde en las slides sin animación -->
