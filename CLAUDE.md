@@ -129,6 +129,9 @@ progreso se ajustan solos. Clases de slide (sección 4 de `css/deck.css`):
 | `slide--comparacion` | Dos columnas de texto, cada una con su bloque `.codigo-slide` |
 | `slide--lienzo` | Animación 16:9 a sangre |
 | `slide--oscura` | Modificador: fondo tinta y letra amarilla. `deck.js` invierte también la barra y el contador |
+| `slide--quiz` | "¿Qué se imprime?": código a la izquierda y 3 opciones numeradas (no con letras: A, B, C es lo que imprime el código). La correcta se marca con el siguiente clic (`.opcion__marca`, un paso `.aparece`) |
+| `slide--vf` | "¿Verdadero o falso?": una afirmación grande y, con el siguiente clic, el veredicto en una pastilla negra y su explicación (`.vf__respuesta`, un paso `.aparece`). También sirve para preguntas abiertas al público (síncrono vs asíncrono: la pastilla dice "Pista") |
+| `oculta` | Saca la slide de la charla sin borrarla: `deck.js` solo recoge `.slide:not(.oculta)`, así que el contador y la numeración por `#n` la ignoran |
 
 **Pasos (bullets que aparecen de uno en uno):** cualquier elemento con
 `class="aparece"` empieza escondido. Avanzar lo revela y solo cuando se ven
@@ -136,7 +139,7 @@ todos pasa de slide; retroceder los esconde en orden inverso. Al volver a una
 slide desde la siguiente, llega con todos visibles. Está en la sección 3b de
 `deck.js`: `siguiente()`/`anterior()` son la única puerta de entrada, así que
 funciona con teclas, clic, rueda y mando. Hoy lo usan los bullets de la
-slide 4 (`.puntos`, antes eran párrafos), Call Stack, Event Loop, Web APIs y
+historia del Event Loop (`.puntos`, antes eran párrafos), "¿Qué va en las colas?", Call Stack, Event Loop, Web APIs y
 las dos colas; en las colas, el bloque de
 ejemplos aparece entero en un solo paso.
 
@@ -198,26 +201,57 @@ siguiente macrotask.
 
 ## Estado actual
 
-Las 30 slides están montadas. Van de la portada a "Gracias wdt :)". El
-tramo final es de Claude, sin diseño de Juan, con el estilo de la slide 4:
+La charla está completa: 38 slides en el HTML, 36 visibles (2 ocultas).
+Esta lista va **por títulos y en orden**, no por número: los números cambian
+cada vez que se agrega o se quita una slide. Lo marcado con (C) lo hizo
+Claude sin diseño de Juan; el resto sale de sus diseños.
 
-- 21 "Ejemplos", y 22 a 24 los Ejemplos 1, 2 y 3 (el 2 y el 3, sobre el molde)
-- 25 "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
-  (frase grande; antes era una lista de bugs, "¿Te ha pasado?", que a Juan
-  no le convenció y eligió esta frase en su lugar)
-- 26 "En resumen"
-- 27 "¿Aburrido? Tal vez.": responde a la broma de la slide 2
-- 28 y 29, cierre emocional: "Hoy la IA escribe código… alguien tiene que
-  saber cómo funcionan los fierros." visible de entrada y "Sé esa persona."
-  aparece con el clic (negra) y "El Event Loop nunca se detiene. Que tu curiosidad
-  tampoco." (amarilla, retoma el "ciclo eterno"). Reemplazan a "¿Por qué
-  importa?", que eran bullets
-- 30 "Gracias wdt :)"
+1. Portada (avatar que flota y brillo en "Event Loop")
+2. Sección "¿Qué es el Event Loop?"
+3. La historia del Event Loop, en bullets por pasos. Juan pidió reescribirla
+   porque con la versión anterior "hasta yo me confundo al leerla": ahora va
+   un solo hilo → el problema → la solución → quién decide cuándo retomar
+   (el Event Loop) → qué se gana
+4. (C) "Vamos a explicar algunas cositas de JavaScript…"
+5. Single-threaded, síncrono y asincronía con el Event Loop (con animaciones)
+6. (C) Pregunta abierta: "¿Cuál es la diferencia entre síncrono y asíncrono?",
+   con pista (una llamada vs un WhatsApp)
+7. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic, para
+   preguntar antes qué se imprime
+8. "¿Todo chido hasta aquí? :)", sección ACTORES y Call Stack
+9. Event Loop, y Web APIs precedido de (C) "¿Verdadero o falso? setTimeout es
+   parte de JavaScript" (falso). Luego las 4 categorías de Web APIs
+10. Actores: colas. (C) "¿Qué va en las colas?": todo lo que llega a las colas
+    es código asíncrono, pero lo que espera es el callback, no la llamada
+11. Macrotask Queue, (C) "¿Verdadero o falso? Todo lo que está dentro de una
+    Promise se ejecuta después" (falso), y Microtask Queue
+12. (C) "¿Quién hace qué?": la rejilla de ACTORES con el papel de cada uno
+    en una línea, como repaso antes de los ejemplos. Aparecen en el orden en
+    que trabajan (stack → Web APIs → colas → event loop), cada uno en su sitio
+13. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
+    animación. Ejemplos 2 y 3 son (C) sobre el molde. **El Ejemplo 3 y su quiz
+    están ocultos** (`oculta`): Juan lo quitó para acortar
+14. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
+    Antes era una lista de bugs ("¿Te ha pasado?") que no le convenció
+15. (C) "En resumen"
+16. (C) "¿Aburrido? Tal vez.": respondía a la broma de apertura ("¿Event
+    Loop?, ¿neta, wey?, qué aburrido"), que Juan quitó para ahorrar tiempo;
+    ahora se sostiene sola
+17. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
+    fierros. Sé esa persona." (negra) y "El Event Loop nunca se detiene. Que
+    tu curiosidad tampoco." (amarilla)
+18. "Gracias wdt :)"
+
+**Ritmo de participación.** Juan pidió "más emoción". Las preguntas al
+público ("¿Qué se imprime?", "¿Verdadero o falso?", la pregunta abierta) se
+reparten para que participe cada 5 o 6 slides, sobre todo en el tramo largo
+de conceptos. Se probó y se quitó una demo que congelaba la página 3 s: no
+le convenció.
 
 ### Pendiente
 
-1. Si llegan más ejemplos, van entre el último ejemplo y la slide 25,
-   siguiendo el molde.
+1. Si llegan más ejemplos, van antes de "Cada vez que tu app se congela…",
+   cada uno con su "¿Qué se imprime?" delante, siguiendo el molde.
 2. **Revisión de Juan en su pantalla**, sobre todo el ritmo al cambiar de slide
    y que las animaciones arranquen bien.
 
@@ -228,6 +262,11 @@ tramo final es de Claude, sin diseño de Juan, con el estilo de la slide 4:
   --virtual-time-budget=8000 --screenshot=salida.png "file:///.../index.html#5"`.
   El `#n` abre la slide n. A veces la captura sale a mitad del fundido y se ve
   más apagada: no es un error.
+  Para ver una slide **con sus pasos revelados y sin fundido**, cárgala en un
+  iframe desde una página auxiliar. Espera ~800 ms tras su `load` (antes de eso
+  el arranque del deck vuelve a esconder los pasos), inyecta
+  `.slide, .aparece { transition: none !important; }` y ponle `.visible` a
+  los `.aparece` de `.slide.activa`.
 
 - **Ojo con `sed` en los `<head>`**: la mayoría de las animaciones tienen los
   `<link>` en una línea, pero `10-ejemplo-settimeout.html` está formateado por
