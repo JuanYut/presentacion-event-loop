@@ -222,6 +222,12 @@ siguiente macrotask.
 - **Paleta**: amarillo `#FFEA00` sobre tinta `#1E1E1E`. Es la identidad de la
   presentación. Las animaciones van invertidas (fondo oscuro, acento amarillo)
   para contrastar dentro de la slide amarilla.
+- **Cursor**: una carita feliz amarilla con contorno tinta (SVG en data URI),
+  porque Juan presenta con el mouse. Está repetida en `css/deck.css` y en
+  `shared/styles.css`: cada iframe tiene su propio cursor. Si se cambia, en
+  los dos. **No pasar de 32px**: Chrome no dibuja cursores más grandes
+  cuando tocan el borde de un documento, y en el borde de los iframes
+  volvía la flecha.
 - **Commits**: en español, una sola línea, simples. **Nunca** líneas de
   coautor ni de atribución generada. Instrucción explícita de Juan.
 
