@@ -111,6 +111,19 @@ La rueda cambia de slide con un bloqueo en `alGirarRueda()` (`deck.js`): tras
 cambiar, ignora la rueda hasta que lleve 250 ms quieta. Así un gesto (con
 inercia de touchpad incluida) cuenta como una sola slide. La animación 07 tiene un solo label, así que ahí solo sirve play/pausa.
 
+**Modo paso a paso** (`data-paso-a-paso` en el iframe; hoy solo el ejemplo).
+Juan explica el ejemplo línea por línea, así que ahí avanzar (clic, rueda,
+teclas, mando) no cambia de slide: el deck manda `avanzar` y la animación
+**reproduce** el tramo hasta el siguiente label y se para. Al llegar a la
+slide no arranca sola: espera en el segundo label (el primero es el silencio
+de `DUR.margen`). Un clic con el tramo a medias lo termina de golpe.
+`retroceder` salta sin animar al label anterior. Cuando se acaban los labels,
+la animación responde `fin-adelante`/`fin-atras` y el deck cambia de slide; al
+volver desde la siguiente llega terminada. Está en la sección 3c de
+`deck.js` y 3d de `controls.js`. Para probarlo en Chrome headless hay que
+mover el ticker a mano (`gsap.ticker.tick()` en un `setInterval`): ahí el
+iframe anidado no recibe `requestAnimationFrame` y GSAP se queda congelado.
+
 ### Agregar o reordenar slides
 
 Todo en `index.html`. Copia un bloque `<section class="slide">` y muévelo:

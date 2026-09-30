@@ -8,6 +8,7 @@
      2. Escalado del lienzo 1920x1080
      3. Cambio de slide (y carga diferida de las animaciones)
         3b. Pasos dentro de una slide (bullets que aparecen de uno en uno)
+     3c. Animaciones paso a paso (avanzar mueve la animación, no la slide)
      4. Teclado, ratón y pantalla completa (clic, clic derecho y rueda)
      5. Mensajes que llegan desde las animaciones
      5b. Barra de control de la animación (debajo del iframe)
@@ -54,13 +55,19 @@ function cargarAnimacion(indice) {
 
 // Avisa a la animación de una slide que entra o sale de pantalla.
 // 'activar' la reinicia desde cero: al llegar a la slide el público la ve
-// empezar, no a mitad del bucle.
-function avisarAnimacion(indice, accion) {
+// empezar, no a mitad del bucle. Las de data-paso-a-paso no arrancan solas:
+// esperan a que el presentador avance (sección 3c).
+function avisarAnimacion(indice, accion, extra = {}) {
   const slide = slides[indice];
   if (!slide) return;
   slide.querySelectorAll('iframe').forEach((marco) => {
     if (!marco.contentWindow) return;
-    marco.contentWindow.postMessage({ origen: 'deck', accion }, '*');
+    marco.contentWindow.postMessage({
+      origen: 'deck',
+      accion,
+      pasoAPaso: marco.hasAttribute('data-paso-a-paso'),
+      ...extra,
+    }, '*');
   });
 }
 
@@ -86,7 +93,9 @@ function ir(indice, { reemplazarHash = false, conPasosVisibles = false } = {}) {
 
   // El iframe puede no haber terminado de cargar la primera vez que llegamos:
   // en ese caso el 'activar' se manda en su evento load (ver sección 6).
-  avisarAnimacion(destino, 'activar');
+  // Al volver desde la slide siguiente, una animación paso a paso se
+  // reencuentra terminada, igual que los pasos .aparece.
+  avisarAnimacion(destino, 'activar', { alFinal: conPasosVisibles });
   colocarBarraControl(destino);
 
   // La barra y el contador son tinta sobre amarillo: en las slides negras
@@ -117,13 +126,26 @@ function pasosDe(indice) {
 function siguiente() {
   const pendiente = pasosDe(actual).find((paso) => !paso.classList.contains('visible'));
   if (pendiente) pendiente.classList.add('visible');
+  else if (esPasoAPaso(actual)) avisarAnimacion(actual, 'avanzar');
   else ir(actual + 1);
 }
 
 function anterior() {
   const mostrados = pasosDe(actual).filter((paso) => paso.classList.contains('visible'));
   if (mostrados.length) mostrados[mostrados.length - 1].classList.remove('visible');
+  else if (esPasoAPaso(actual)) avisarAnimacion(actual, 'retroceder');
   else ir(actual - 1, { conPasosVisibles: true });
+}
+
+/* ---------- 3c. Animaciones paso a paso ----------
+   Para explicar un ejemplo línea por línea: con data-paso-a-paso en el
+   iframe, avanzar le pide a la animación que reproduzca su siguiente tramo
+   en vez de cambiar de slide. Ella sabe cuándo se le acabaron los tramos y
+   lo avisa con 'fin-adelante' / 'fin-atras' (sección 5). Así sirve igual con
+   teclas, clic, rueda y mando. */
+function esPasoAPaso(indice) {
+  const marco = slides[indice].querySelector('iframe[data-paso-a-paso]');
+  return Boolean(marco && marco.contentWindow);
 }
 
 /* ---------- 4. Teclado, ratón y pantalla completa ----------
@@ -230,6 +252,11 @@ function alRecibirMensaje(evento) {
   if (evento.data.accion === 'rueda') alGirarRueda(evento.data.delta);
   if (evento.data.accion === 'mouse') alMoverRaton();
   if (evento.data.accion === 'estado') mostrarEstado(evento);
+  // Solo cuenta la animación en pantalla: una vecina no debe cambiar de slide
+  const marco = slides[actual].querySelector('iframe');
+  if (!marco || evento.source !== marco.contentWindow) return;
+  if (evento.data.accion === 'fin-adelante') ir(actual + 1);
+  if (evento.data.accion === 'fin-atras') ir(actual - 1, { conPasosVisibles: true });
 }
 
 /* ---------- 5b. Barra de control de la animación ----------

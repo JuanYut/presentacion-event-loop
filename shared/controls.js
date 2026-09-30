@@ -7,6 +7,7 @@
      3. Controles de teclado: configurarControles(tl)
         3b. Puente con el deck (postMessage)
         3c. Control con mouse dentro del deck (órdenes de la barra, clics)
+        3d. Modo paso a paso (el presentador avanza la animación a clics)
      4. Utilidades de escena (apilar, desapilar, encolar, imprimir...)
 
    Requiere que GSAP ya esté cargado (window.gsap).
@@ -23,6 +24,10 @@ const dentroDelDeck = window.parent !== window;
 // Referencia a la timeline de la escena, para que el deck pueda pausarla
 // y reiniciarla al entrar y salir de la slide.
 let timelinePrincipal = null;
+
+// Modo paso a paso (sección 3d): lo enciende el deck al activar la slide.
+let pasoAPaso = false;
+let tweenPaso = null;   // el tramo que se está reproduciendo, si hay uno
 
 /* ---------- 1. Constantes de animación ----------
    Todas las escenas usan estos valores para que el ritmo sea consistente.
@@ -140,7 +145,8 @@ function configurarControles(tl, infinita = true) {
 
      animación → deck : 'siguiente' / 'anterior' (teclas o clics en el iframe)
                         'rueda' + delta (la rueda del mouse sobre el iframe)
-     deck → animación : 'activar'   (la slide entra: reiniciar desde cero)
+     deck → animación : 'activar'   (la slide entra: reiniciar desde cero,
+                                     o quedarse quieta si es paso a paso)
                         'desactivar' (la slide sale: pausar para no gastar CPU) */
 function avisarAlDeck(accion, delta) {
   window.parent.postMessage({ origen: 'animacion', accion, delta }, '*');
@@ -152,8 +158,16 @@ function escucharAlDeck() {
     const tl = timelinePrincipal;
     if (!tl) return;
 
-    if (evento.data.accion === 'activar') tl.restart();
-    if (evento.data.accion === 'desactivar') tl.pause();
+    if (evento.data.accion === 'activar') {
+      pasoAPaso = Boolean(evento.data.pasoAPaso);
+      detenerTramo();
+      if (!pasoAPaso) tl.restart();
+      else tl.pause(evento.data.alFinal ? finPasoAPaso(tl) : inicioPasoAPaso(tl));
+    }
+    if (evento.data.accion === 'desactivar') {
+      detenerTramo();
+      tl.pause();
+    }
   });
 }
 
@@ -172,7 +186,13 @@ function conectarControlConDeck(tl, saltarLabel, tiemposLabels) {
   window.addEventListener('message', (evento) => {
     if (!evento.data || evento.data.origen !== 'deck') return;
     const accion = evento.data.accion;
-    if (accion === 'reiniciar') tl.restart();
+    if (accion === 'reiniciar') {
+      detenerTramo();
+      if (pasoAPaso) tl.pause(inicioPasoAPaso(tl));
+      else tl.restart();
+    }
+    if (accion === 'avanzar') avanzarTramo(tl, tiemposLabels);
+    if (accion === 'retroceder') retrocederTramo(tl, tiemposLabels);
     if (accion === 'paso-anterior') saltarLabel(-1);
     if (accion === 'paso-siguiente') saltarLabel(+1);
     if (accion === 'alternar') {
@@ -235,6 +255,60 @@ function reenviarClicsAlDeck() {
     evento.preventDefault();
     avisarAlDeck('rueda', evento.deltaY);
   }, { passive: false });
+}
+
+/* ---------- 3d. Modo paso a paso ----------
+   Para explicar un ejemplo línea por línea. Con el atributo
+   data-paso-a-paso en el iframe, el deck ya no cambia de slide al avanzar:
+   manda 'avanzar' y la animación REPRODUCE el tramo hasta el siguiente label
+   y se detiene ahí. En el último label responde 'fin-adelante' y entonces sí
+   cambia de slide. 'retroceder' salta sin animar al label anterior, o
+   responde 'fin-atras' si ya está en el primero.
+
+   Arranca en el SEGUNDO label: el primero ("inicio") solo abre el silencio
+   de DUR.margen, y con él el primer clic no haría nada visible. */
+function inicioPasoAPaso(tl) {
+  const tiempos = Object.values(tl.labels).sort((a, b) => a - b);
+  return tiempos.length > 1 ? tiempos[1] : 0;
+}
+
+// Al volver desde la slide siguiente se llega al último label y no a
+// tl.duration(): con la timeline en bucle, el final exacto daría la vuelta a 0.
+function finPasoAPaso(tl) {
+  return Math.max(0, ...Object.values(tl.labels));
+}
+
+function detenerTramo() {
+  if (tweenPaso) tweenPaso.kill();
+  tweenPaso = null;
+}
+
+function avanzarTramo(tl, tiemposLabels) {
+  // Clic con un tramo a medias: se termina de golpe, como en PowerPoint.
+  // progress() y no isActive(): este da false hasta el primer frame, y un
+  // doble clic rápido empezaba otro tramo en vez de terminar el actual.
+  if (tweenPaso && tweenPaso.progress() < 1) {
+    tweenPaso.progress(1);
+    detenerTramo();
+    return;
+  }
+  const destino = tiemposLabels().find((t) => t > tl.time() + 0.01);
+  if (destino === undefined) {
+    avisarAlDeck('fin-adelante');
+    return;
+  }
+  tl.pause();
+  tweenPaso = tl.tweenTo(destino);
+}
+
+function retrocederTramo(tl, tiemposLabels) {
+  detenerTramo();
+  const destino = [...tiemposLabels()].reverse().find((t) => t < tl.time() - 0.01);
+  if (destino === undefined || destino < inicioPasoAPaso(tl)) {
+    avisarAlDeck('fin-atras');
+    return;
+  }
+  tl.pause(destino);
 }
 
 /* ---------- 4b. Navegación entre animaciones ----------
