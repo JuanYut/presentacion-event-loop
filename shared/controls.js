@@ -311,58 +311,6 @@ function retrocederTramo(tl, tiemposLabels) {
   tl.pause(destino);
 }
 
-/* ---------- 4b. Navegación entre animaciones ----------
-   configurarNavegacion() agrega botones "Anterior" y "Siguiente" para navegar
-   entre las animaciones de la presentación Event Loop. */
-function configurarNavegacion() {
-  // Dentro del deck navega el deck: estos botones sobrarían en pantalla.
-  if (dentroDelDeck) return;
-
-  const archivos = [
-    '01-single-thread.html',
-    '02-sincrono.html',
-    '03-event-loop-callbacks.html',
-    '04-call-stack.html',
-    '05-event-loop.html',
-    '06-web-apis.html',
-    '07-web-apis-categorias.html',
-    '08-macrotask-queue.html',
-    '09-microtask-queue.html',
-    '10-ejemplo-settimeout.html',
-    '11-ejemplo-promise.html',
-    '12-ejemplo-promesas-encadenadas.html'
-  ];
-
-  const url = new URL(window.location);
-  const path = url.pathname;
-  const nombreArchivo = path.split('/').pop();
-
-  const numeroActual = archivos.indexOf(nombreArchivo) + 1;
-  if (numeroActual === 0) return; // No es un archivo conocido
-
-  const numeroAnterior = numeroActual - 1;
-  const numeroSiguiente = numeroActual + 1;
-
-  const nav = document.createElement('nav');
-  nav.className = 'animacion-nav';
-
-  let html = '<div class="animacion-nav__contenedor">';
-
-  if (numeroAnterior >= 1) {
-    html += `<a href="${archivos[numeroAnterior - 1]}" class="animacion-nav__boton animacion-nav__anterior">← Anterior</a>`;
-  }
-
-  html += `<span class="animacion-nav__numero">${String(numeroActual).padStart(2, '0')}/${archivos.length}</span>`;
-
-  if (numeroSiguiente <= archivos.length) {
-    html += `<a href="${archivos[numeroSiguiente - 1]}" class="animacion-nav__boton animacion-nav__siguiente">Siguiente →</a>`;
-  }
-
-  html += '</div>';
-  nav.innerHTML = html;
-  document.body.appendChild(nav);
-}
-
 /* ---------- 4. Utilidades de escena ----------
    Pequeños helpers que agregan tweens a una timeline. Todos reciben la
    timeline, el elemento y (opcional) la posición dentro de la timeline,

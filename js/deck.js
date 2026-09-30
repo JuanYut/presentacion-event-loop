@@ -17,9 +17,7 @@
 
 /* ---------- 1. Estado y referencias ---------- */
 const deck = document.querySelector('.deck');
-// Las slides con .oculta se quedan en el HTML pero el deck se las salta: así
-// se acorta la charla sin perder el trabajo (quitar la clase las recupera).
-const slides = Array.from(document.querySelectorAll('.slide:not(.oculta)'));
+const slides = Array.from(document.querySelectorAll('.slide'));
 const progreso = document.querySelector('.barra__progreso');
 const contador = document.querySelector('.contador');
 const ayuda = document.querySelector('.ayuda-deck');

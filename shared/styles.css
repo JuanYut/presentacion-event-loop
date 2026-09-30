@@ -9,8 +9,6 @@
      4. Paneles del runtime (Call Stack, Web APIs, colas, consola)
      5. Event loop (ícono circular)
      6. Ayuda de teclado y pista
-     7. Navegación entre animaciones
-     8. Página índice
    ============================================================ */
 
 /* ---------- 1. Variables ---------- */
@@ -32,11 +30,9 @@
   --color-loop: #ffffff;       /* Event loop ........ blanco   */
 
   /* Resaltado de sintaxis del código */
-  --sx-keyword: #c792ea;
   --sx-funcion: #82aaff;
   --sx-string: #c3e88d;
   --sx-numero: #f78c6c;
-  --sx-comentario: #5c6370;
 
   /* Tipografía */
   --fuente-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -113,11 +109,9 @@ html, body {
 .stage--slide .panel__titulo { border-bottom-color: var(--acento-suave); }
 .stage--slide .codigo__resaltado { background: rgba(255, 234, 0, 0.12); border-left-color: var(--acento); }
 .stage--slide .linea::before { color: var(--acento); }
-.stage--slide .kw  { color: var(--acento); }
 .stage--slide .fn  { color: #ffffff; }
 .stage--slide .str { color: rgba(255, 234, 0, 0.8); }
 .stage--slide .num { color: rgba(255, 234, 0, 0.8); }
-.stage--slide .cm  { color: rgba(255, 255, 255, 0.35); }
 .stage--slide .frame, .stage--slide .item { --c: var(--acento); color: var(--acento); background: rgba(255, 234, 0, 0.1); }
 .stage--slide .consola__linea::before { color: var(--acento); }
 
@@ -375,11 +369,9 @@ html, body {
   opacity: 0.6;
 }
 /* Tokens de sintaxis */
-.kw  { color: var(--sx-keyword); }
 .fn  { color: var(--sx-funcion); }
 .str { color: var(--sx-string); }
 .num { color: var(--sx-numero); }
-.cm  { color: var(--sx-comentario); font-style: italic; }
 
 /* ---------- 4. Paneles del runtime ---------- */
 .panel--stack   { --c: var(--color-stack); }
@@ -521,81 +513,3 @@ html, body {
   opacity: 0.6;
 }
 .pista.oculto { display: none; }
-
-/* ---------- 7. Navegación entre animaciones ---------- */
-.animacion-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  padding: 12px 24px;
-  background: rgba(7, 8, 12, 0.85);
-  backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.animacion-nav__contenedor {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-.animacion-nav__boton {
-  display: inline-block;
-  padding: 8px 20px;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: var(--fuente-ui);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-.animacion-nav__boton:hover {
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-.animacion-nav__numero {
-  font-family: var(--fuente-codigo);
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  min-width: 44px;
-  text-align: center;
-}
-
-/* ---------- 8. Página índice ---------- */
-body.pagina-indice { overflow: auto; }
-.indice {
-  max-width: 720px;
-  margin: 12vh auto;
-  padding: 0 24px;
-}
-.indice h1 { font-size: 40px; margin-bottom: 8px; }
-.indice p  { color: var(--texto-suave); margin-top: 0; }
-.indice ol { list-style: none; padding: 0; display: grid; gap: 12px; }
-.indice a {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 24px;
-  background: var(--bg-panel);
-  border: 2px solid var(--borde-panel);
-  border-left: 6px solid var(--c);
-  border-radius: 12px;
-  color: var(--texto);
-  text-decoration: none;
-  font-size: 20px;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.indice a:hover { border-color: var(--c); transform: translateX(4px); }
-.indice a code { font-family: var(--fuente-codigo); color: var(--texto-suave); font-size: 16px; }
-.indice h2 { font-size: 20px; color: var(--texto-suave); margin: 40px 0 12px; }
-/* Fila compacta de enlaces secundarios */
-.indice__fila { display: flex; flex-wrap: wrap; gap: 12px; }
-.indice__fila a { padding: 12px 18px; font-size: 16px; }
-.indice__fila a:hover { transform: none; }

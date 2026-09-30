@@ -51,10 +51,10 @@ iframe se cargue solo cuando la slide se acerca:
 
 ```html
 <!-- animación cuadrada (1080x1080) -->
-<iframe class="animacion" data-src="animaciones/01-single-thread.html"></iframe>
+<iframe class="animacion" data-src="animaciones/02-sincrono.html"></iframe>
 
 <!-- animación en 16:9 (1920x1080) -->
-<iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"></iframe>
+<iframe class="animacion animacion--ancha" data-src="animaciones/11-ejemplo-promise.html"></iframe>
 ```
 
 ### Por qué las animaciones van en iframe
@@ -75,7 +75,7 @@ medidas conocidas y se ve igual en el portátil y en el proyector.
 ## Las animaciones dentro y fuera del deck
 
 `shared/controls.js` detecta si está dentro de un iframe (`dentroDelDeck`) y
-cambia tres cosas:
+cambia dos cosas:
 
 - **Arranque**: fuera del deck la animación empieza sola en bucle; dentro
   espera, y el deck la reinicia desde cero cuando su slide entra en pantalla,
@@ -83,8 +83,11 @@ cambia tres cosas:
 - **Flechas**: fuera del deck avanzan paso a paso por la timeline; dentro
   cambian de slide (si el foco cayó en el iframe, las reenvía al deck con
   `postMessage`).
-- **Navegación propia**: los botones "Anterior / Siguiente" de las animaciones
-  se ocultan dentro del deck, porque ahí navega el deck.
+Dentro del deck, `Espacio` avanza de slide. Para controlar una animación
+concreta, mueve el mouse sobre ella y aparece una barra con reiniciar, paso
+anterior/siguiente y play/pausa.
 
-Dentro del deck, `Espacio` avanza de slide. Para pausar una animación concreta,
-haz clic en ella y usa `R` para reiniciarla.
+La animación del ejemplo va en **modo paso a paso** (`data-paso-a-paso` en su
+iframe): ahí avanzar reproduce un paso de la animación y se detiene, para
+explicar el código línea por línea. Al terminar el último paso, avanzar pasa
+a la siguiente slide.
