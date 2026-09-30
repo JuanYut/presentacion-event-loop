@@ -125,7 +125,8 @@ progreso se ajustan solos. Clases de slide (sección 4 de `css/deck.css`):
 | `slide--partida` | Texto a la izquierda (500px) y animación de 796px a la derecha |
 | `slide--partida-ancha` | Igual, con columna de texto de 930px (listas `.lista`: Call Stack, Event Loop, Web APIs) |
 | `slide--partida-media` | Columna de 540px pegada a la animación, texto `.encabezado-lateral` alineado a la derecha |
-| `slide--partida-cola` | Columna de 757px para el bloque `.cola` (Macrotask/Microtask: alias, título, puntos y ejemplos) |
+| `slide--partida-cola` | Columna de 757px para el bloque `.cola` (alias, título, puntos y ejemplos). Hoy no la usa ninguna slide |
+| `slide--partida-colas` | Columna de 900px con dos `.cola--compacta` apiladas (Microtask y Macrotask en una sola slide, con letra más chica para que quepan) |
 | `slide--comparacion` | Dos columnas de texto, cada una con su bloque `.codigo-slide` |
 | `slide--lienzo` | Animación 16:9 a sangre |
 | `slide--oscura` | Modificador: fondo tinta y letra amarilla. `deck.js` invierte también la barra y el contador |
@@ -213,7 +214,10 @@ siguiente macrotask.
 
 ## Estado actual
 
-La charla está completa: 45 slides en el HTML, 43 visibles (2 ocultas).
+La charla está completa: 43 slides en el HTML, 31 visibles (12 ocultas: se
+recortó porque se pasaba del tiempo). Juan tiene **15 minutos + 5 de
+preguntas**; en el ensayo duró ~20, y el ejemplo es lo que más tiempo lleva
+(a propósito: él lo considera lo más valioso).
 Esta lista va **por títulos y en orden**, no por número: los números cambian
 cada vez que se agrega o se quita una slide. Lo marcado con (C) lo hizo
 Claude sin diseño de Juan; el resto sale de sus diseños.
@@ -228,42 +232,45 @@ Claude sin diseño de Juan; el resto sale de sus diseños.
    "¿Y quién decide cuándo retomarlo?" → "Event Loop" solo, en grande y en
    negro. Juan dice ahí de palabra "quien nos ayuda con esto es el Event
    Loop". Sustituye a la sección "¿Qué es el Event Loop?" y a los bullets
-4. (C) **Contexto histórico**: "Dato curioso: JavaScript no inventó el Event
-   Loop. Lo heredó del navegador… y no fue lo único que heredó, ya lo verán"
-   (se cobra en el V/F de setTimeout, cuya explicación dice "como el Event
-   Loop, JS la heredó del navegador") y la línea del tiempo "¿Cómo llegamos
-   aquí?": 1995 JS nace con setTimeout, 2009 Node.js, 2015 Promises y
-   microtasks, 2017 async/await
+4. (C) **Contexto histórico**, **oculto entero** para acortar: "Dato
+   curioso: JavaScript no inventó el Event Loop" (se cobraba en el V/F de
+   setTimeout, también oculto) y la línea del tiempo "¿Cómo llegamos aquí?"
 5. (C) "Para resolverlo, primero 3 cosas de JavaScript…" (single-threaded,
    síncrono y asincronía)
-6. Single-threaded y síncrono (con animaciones)
-7. (C) Pregunta abierta: "¿Cuál es la diferencia entre síncrono y asíncrono?",
-   con pista (una llamada vs un WhatsApp)
+6. Single-threaded y síncrono **en una sola slide** ("JS es síncrono: tiene
+   un solo hilo…"), con la animación de síncrono. La de single-thread se borró
+7. (C) La pregunta abierta "¿Cuál es la diferencia entre síncrono y
+   asíncrono?" está **oculta** para acortar
 8. Síncrono vs Asíncrono: el `// Output: 1, 2` aparece con un clic
 9. Asincronía con el Event Loop y qué es un callback (con animación). Va
    DESPUÉS de síncrono vs asíncrono: primero qué es asíncrono, luego cómo lo hace JS
-10. (C) **Los demás lenguajes**: tabla "¿Y los demás lenguajes?" (varios
-   hilos / Event Loop / hilos ligeros), "En JavaScript, el Event Loop no es
-   opcional" (negra) y "Dato curioso: async/await no nació en JavaScript"
-   (C# 2012). Va aquí porque el público ya sabe qué es un hilo y bloquear
+10. (C) **Los demás lenguajes**: la tabla "¿Y los demás lenguajes?" está
+   **oculta** para acortar, y también "Dato curioso: async/await no nació en
+   JavaScript" (C# 2012). Queda "En JavaScript, el Event Loop no es
+   opcional" (negra). Va aquí porque el público ya sabe qué es un hilo y bloquear
 11. "¿Todo chido hasta aquí? :)" y sección "Los engranes del motor" (antes ACTORES). Sigue la metáfora de la portada: el Event Loop es el motor, no trabaja solo, y también sale en la rejilla como el engrane que hace girar a los demás. "Engranes" y no "engranajes": es lo que se dice en México
-12. Call Stack
-13. Web APIs: (C) "¿Verdadero o falso? setTimeout es parte de JavaScript"
-    (falso), Web APIs y las 4 categorías
-14. Colas: (C) "¿Qué va en las colas?", Macrotask Queue, (C) "¿Verdadero o
+12. Call Stack (3 bullets, recortado para ir más rápido)
+13. Web APIs y las 4 categorías. El (C) "¿Verdadero o falso? setTimeout es
+    parte de JavaScript" está **oculto** para acortar
+14. Colas: (C) "¿Qué va en las colas?" (2 bullets: va el callback, no la
+    llamada; espera a que el stack quede vacío), **las dos colas en una sola slide**
+    (Microtask arriba, Macrotask abajo, 3 ejemplos cada una, con la animación
+    09, que muestra las dos colas trabajando) y después (C) "¿Verdadero o
     falso? Todo lo que está dentro de una Promise se ejecuta después" (falso; la respuesta trae al lado un ejemplo MUY simple, a pedido de Juan: pero con el .then a la vista. Sin línea de Output: cada log lleva "// Sync" o "// Async" como guía de Juan, y la salida (dentro, then) la dice él. Sin log de fuera: Juan lo quitó para simplificar)
-    y Microtask Queue
 15. Event Loop, **al final de los engranes**: su trabajo es mover callbacks de
     las colas al stack, así que se explica cuando ya se conocen las colas.
     Es el orden en que viaja el código, el mismo de "¿Qué hace cada engrane?"
-16. (C) "¿Qué hace cada engrane?": la rejilla de los engranes con el papel de cada uno,
+16. (C) "En resumen:" (antes "¿Qué hace cada engrane?"): la rejilla de los engranes con el papel de cada uno,
     como repaso antes de los ejemplos
 17. Sección "Ejemplos". Por cada ejemplo, un (C) "¿Qué se imprime?" y la
-    animación. Ejemplos 2 y 3 son (C) sobre el molde. **El Ejemplo 3 y su quiz
-    están ocultos** (`oculta`): Juan lo quitó para acortar
+    animación. Ejemplos 2 y 3 son (C) sobre el molde. **Solo queda visible el
+    Ejemplo 2** (el más completo): el 1 y el 3, con sus quizzes, están ocultos
+    (`oculta`) para acortar. El 1 sigue siendo el molde aunque no se vea.
+    Como es el único, en pantalla el 2 dice "Ejemplo 1" (`11-ejemplo-promise.html`)
 18. (C) "Cada vez que tu app se congela, el Event Loop te está diciendo algo."
+    **Oculta** para acortar
 19. (C) "Las 3 reglas del Event Loop": síncrono → todas las microtasks → una
-    macrotask. Reemplaza a "En resumen", que repetía "¿Qué hace cada engrane?"
+    macrotask. **Oculta** para acortar
 20. (C) Cierre emocional: "…alguien tiene que saber cómo funcionan los
     fierros. Sé esa persona." (negra) y "El Event Loop nunca se detiene. Que
     tu curiosidad tampoco." (amarilla)

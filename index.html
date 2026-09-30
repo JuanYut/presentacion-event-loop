@@ -137,8 +137,9 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
   <!-- ===== 2b. Contexto: JS no inventó el Event Loop =====
        Primera de las slides "Dato curioso" (aspecto .vf). Siembra una idea
        que se cobra en el "¿Verdadero o falso?" de setTimeout: el navegador
-       le dio a JS el Event Loop... y no fue lo único que le dio. -->
-  <section class="slide slide--centrada slide--vf">
+       le dio a JS el Event Loop... y no fue lo único que le dio.
+       OCULTA para acortar (el V/F que la cobraba también está oculto). -->
+  <section class="slide slide--centrada slide--vf oculta">
     <div class="vf">
       <svg class="icono"><use href="#icono-curioso"/></svg>
       <p class="vf__etiqueta">Dato curioso</p>
@@ -149,8 +150,9 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
 
   <!-- ===== 2c. Contexto: línea del tiempo =====
        Solo fechas verificadas. El año en que HTML5 escribió el Event Loop en
-       su especificación no está claro, por eso no aparece. -->
-  <section class="slide slide--centrada">
+       su especificación no está claro, por eso no aparece.
+       OCULTA para acortar la charla. -->
+  <section class="slide slide--centrada oculta">
     <div class="linea">
       <p class="linea__titulo">¿Cómo llegamos aquí?</p>
       <ol class="linea__hitos">
@@ -179,24 +181,20 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     <p class="frase frase--mediana">Para resolverlo,<br>primero 3 cosas<br>de JavaScript…</p>
   </section>
 
-  <!-- ===== 5. JS es single-threaded ===== -->
+  <!-- ===== 5. JS es single-threaded y síncrono =====
+       Antes eran dos slides; se juntaron para acortar. Manda la de síncrono
+       (su texto y su animación): lo de un solo hilo va de entrada. -->
   <section class="slide slide--partida">
-    <p class="texto"><strong>JS es single-threaded:</strong><br>Solo puede ejecutar una instrucción a la vez</p>
-    <iframe class="animacion" data-src="animaciones/01-single-thread.html"
-            title="Animación: un solo hilo ejecuta una instrucción a la vez"></iframe>
-  </section>
-
-  <!-- ===== 6. JS es síncrono ===== -->
-  <section class="slide slide--partida">
-    <p class="texto"><strong>JS es síncrono:</strong><br>El código se ejecuta línea por línea, en orden</p>
+    <p class="texto"><strong>JS es síncrono:</strong><br>Tiene un solo hilo, así que ejecuta el código línea por línea, en orden</p>
     <iframe class="animacion" data-src="animaciones/02-sincrono.html"
             title="Animación: las instrucciones se ejecutan en orden, una tras otra"></iframe>
   </section>
 
   <!-- ===== 7. Pregunta al público: síncrono vs asíncrono =====
        Reusa el aspecto de "¿Verdadero o falso?" (.vf). La respuesta la da la
-       slide siguiente; aquí el clic solo muestra una pista, por si nadie se anima. -->
-  <section class="slide slide--centrada slide--vf">
+       slide siguiente; aquí el clic solo muestra una pista, por si nadie se anima.
+       OCULTA para acortar la charla. -->
+  <section class="slide slide--centrada slide--vf oculta">
     <div class="vf">
       <svg class="icono"><use href="#icono-pregunta"/></svg>
       <p class="vf__etiqueta">Pregunta</p>
@@ -232,8 +230,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
 
   <!-- ===== 9b. Contexto: ¿y los demás lenguajes? =====
        Va aquí y no antes: el público ya sabe qué es un hilo y qué es
-       bloquear. Cada fila es un paso. -->
-  <section class="slide slide--centrada">
+       bloquear. Cada fila es un paso. OCULTA para acortar la charla. -->
+  <section class="slide slide--centrada oculta">
     <div class="lenguajes">
       <p class="lenguajes__titulo">¿Y los demás lenguajes?</p>
       <p class="lenguajes__subtitulo">Casi todos son síncronos por defecto. Lo que cambia es cómo evitan quedarse bloqueados.</p>
@@ -266,8 +264,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     <p class="remate aparece">Es el único camino. Por eso, si bloqueas el hilo,<br>se congela toda la página.</p>
   </section>
 
-  <!-- ===== 9d. Dato curioso: async/await ===== -->
-  <section class="slide slide--centrada slide--vf">
+  <!-- ===== 9d. Dato curioso: async/await ===== OCULTA para acortar la charla -->
+  <section class="slide slide--centrada slide--vf oculta">
     <div class="vf">
       <svg class="icono"><use href="#icono-curioso"/></svg>
       <p class="vf__etiqueta">Dato curioso</p>
@@ -311,7 +309,6 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
         <li class="aparece">Es una pila LIFO (último en entrar, primero en salir).</li>
         <li class="aparece">Es donde se ven las funciones u operaciones que el hilo está ejecutando.</li>
         <li class="aparece">Es bloqueante PORQUE el hilo de JS solo puede hacer una cosa a la vez.</li>
-        <li class="aparece">Es una visualización del trabajo del hilo, no quien controla el flujo.</li>
       </ul>
     </div>
     <iframe class="animacion" data-src="animaciones/04-call-stack.html"
@@ -328,8 +325,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     </div>
   </section>
 
-  <!-- ===== 15. ¿Verdadero o falso? (setTimeout) ===== -->
-  <section class="slide slide--centrada slide--vf">
+  <!-- ===== 15. ¿Verdadero o falso? (setTimeout) ===== OCULTA para acortar la charla -->
+  <section class="slide slide--centrada slide--vf oculta">
     <div class="vf">
       <svg class="icono"><use href="#icono-vf"/></svg>
       <p class="vf__etiqueta">¿Verdadero o falso?</p>
@@ -377,35 +374,47 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     <div class="resumen">
       <p class="resumen__titulo">¿Qué va en las colas?</p>
       <ul class="puntos">
-        <li class="aparece">Todo lo que llega a la <strong>Microtask</strong> o a la <strong>Macrotask Queue</strong> es <strong>código asíncrono</strong>: se va a ejecutar <strong>después</strong>.</li>
-        <li class="aparece">Ojo: lo que va a la cola es el <strong>callback</strong>, no la llamada.<br><strong>setTimeout(...)</strong> y <strong>.then(...)</strong> se ejecutan <strong>en el momento</strong>, de forma síncrona. Solo la <strong>función que les pasas</strong> espera en la cola.</li>
-        <li class="aparece">Ahí espera hasta que el <strong>Call Stack</strong> quede vacío y el <strong>Event Loop</strong> lo tome.</li>
+        <li class="aparece">A la cola va el <strong>callback</strong>, no la llamada:<br>la función que le pasas a <strong>setTimeout</strong> o a <strong>.then</strong>.</li>
+        <li class="aparece">Ahí espera a que el <strong>Call Stack</strong> quede vacío y el <strong>Event Loop</strong> lo tome.</li>
       </ul>
     </div>
   </section>
 
-  <!-- ===== 20. Macrotask Queue ===== -->
-  <section class="slide slide--partida slide--partida-cola">
-    <div class="cola">
-      <p class="cola__alias">Callback queue</p>
-      <p class="cola__titulo">Macrotask Queue:</p>
-      <ul>
-        <li class="aparece">Cola para Web APIs.</li>
-        <li class="aparece">Se ejecuta UNO por ciclo.</li>
-        <li class="aparece">Prioridad BAJA.</li>
-      </ul>
-      <div class="aparece">
-        <p class="cola__ejemplos"><strong>Ejemplos de macrotasks:</strong></p>
-        <ul class="cola__codigo">
+  <!-- ===== 20. Las dos colas: Microtask y Macrotask =====
+       Antes eran dos slides; se juntaron para acortar. Micro va arriba porque
+       es la que se vacía primero. La animación es la de la Microtask Queue:
+       es la que muestra a las dos colas trabajando. -->
+  <section class="slide slide--partida slide--partida-colas">
+    <div>
+      <div class="cola cola--compacta">
+        <p class="cola__titulo">Microtask Queue:</p>
+        <ul>
+          <li class="aparece">Cola para Promises.</li>
+          <li class="aparece">Se ejecutan TODOS por ciclo.</li>
+          <li class="aparece">Prioridad ALTA.</li>
+        </ul>
+        <ul class="cola__codigo aparece">
+          <li>Promise.resolve().then(() =&gt; {});</li>
+          <li>Promise.reject().catch(() =&gt; {});</li>
+          <li>queueMicrotask(() =&gt; {});</li>
+        </ul>
+      </div>
+      <div class="cola cola--compacta">
+        <p class="cola__titulo">Macrotask Queue: <span class="cola__alias">(Callback queue)</span></p>
+        <ul>
+          <li class="aparece">Cola para Web APIs.</li>
+          <li class="aparece">Se ejecuta UNO por ciclo.</li>
+          <li class="aparece">Prioridad BAJA.</li>
+        </ul>
+        <ul class="cola__codigo aparece">
           <li>setTimeout(() =&gt; {}, 0);</li>
           <li>setInterval(() =&gt; {}, 1000);</li>
           <li>addEventListener('click', ...);</li>
-          <li>XMLHttpRequest;</li>
         </ul>
       </div>
     </div>
-    <iframe class="animacion" data-src="animaciones/08-macrotask-queue.html"
-            title="Animación: la cola de macrotasks"></iframe>
+    <iframe class="animacion" data-src="animaciones/09-microtask-queue.html"
+            title="Animación: la cola de microtasks y su prioridad frente a la de macrotasks"></iframe>
   </section>
 
   <!-- ===== 21. ¿Verdadero o falso? (Promises) ===== -->
@@ -431,29 +440,6 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
 });</pre>
       </div>
     </div>
-  </section>
-
-  <!-- ===== 22. Microtask Queue ===== -->
-  <section class="slide slide--partida slide--partida-cola">
-    <div class="cola">
-      <p class="cola__titulo">Microtask Queue:</p>
-      <ul>
-        <li class="aparece">Cola para Promises.</li>
-        <li class="aparece">Se ejecutan TODOS por ciclo.</li>
-        <li class="aparece">Prioridad ALTA.</li>
-      </ul>
-      <div class="aparece">
-        <p class="cola__ejemplos"><strong>Ejemplos de microtasks:</strong></p>
-        <ul class="cola__codigo">
-          <li>Promise.resolve().then(() =&gt; {});</li>
-          <li>Promise.reject().catch(() =&gt; {});</li>
-          <li>Promise.resolve().finally(() =&gt; {});</li>
-          <li>queueMicrotask(() =&gt; {});</li>
-        </ul>
-      </div>
-    </div>
-    <iframe class="animacion" data-src="animaciones/09-microtask-queue.html"
-            title="Animación: la cola de microtasks y su prioridad"></iframe>
   </section>
 
   <!-- ===== 23. Engranes: Event Loop ===== -->
@@ -487,7 +473,7 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
        visual y la posición va en --fila/--columna. -->
   <section class="slide slide--oscura slide--centrada">
     <div>
-      <p class="actores__titulo">¿Qué hace cada engrane?</p>
+      <p class="actores__titulo">En resumen:</p>
       <div class="actores actores--resumen">
         <div class="actor aparece" style="--fila: 1; --columna: 1">
           <span>Call Stack</span>
@@ -520,8 +506,8 @@ console.<span class="fn">log</span>(<span class="str">'1'</span>);  <span class=
     charla no se quede sin ella.
   -->
 
-  <!-- ===== 27. ¿Qué se imprime? (Ejemplo 1) ===== -->
-  <section class="slide slide--quiz">
+  <!-- ===== 27. ¿Qué se imprime? (Ejemplo 1) ===== OCULTA: queda solo el Ejemplo 2 -->
+  <section class="slide slide--quiz oculta">
     <div class="quiz__encabezado">
       <p class="quiz__titulo">¿Qué se imprime?</p>
       <p class="quiz__pista">Levanta la mano por tu respuesta</p>
@@ -542,8 +528,8 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
     </div>
   </section>
 
-  <!-- ===== 28. Ejemplo: setTimeout 0 (16:9, a sangre) ===== -->
-  <section class="slide slide--oscura slide--lienzo">
+  <!-- ===== 28. Ejemplo: setTimeout 0 (16:9, a sangre) ===== OCULTA: queda solo el Ejemplo 2 -->
+  <section class="slide slide--oscura slide--lienzo oculta">
     <iframe class="animacion animacion--ancha" data-src="animaciones/10-ejemplo-settimeout.html"
             title="Animación: ejemplo de setTimeout con 0 milisegundos"></iframe>
   </section>
@@ -614,15 +600,15 @@ Promise.<span class="fn">resolve</span>()
             title="Animación: promesas encadenadas, una microtask encola otra en el mismo ciclo"></iframe>
   </section>
 
-  <!-- ===== 33. Del ejemplo a la vida real ===== -->
-  <section class="slide slide--oscura slide--centrada">
+  <!-- ===== 33. Del ejemplo a la vida real ===== OCULTA para acortar la charla -->
+  <section class="slide slide--oscura slide--centrada oculta">
     <p class="frase frase--larga">Cada vez que tu app se congela,<br>el Event Loop te está diciendo algo.</p>
   </section>
 
   <!-- ===== 34. Las 3 reglas del Event Loop =====
-       No repite "¿Qué hace cada engrane?": resume el ORDEN, que es lo que resuelve
-       cualquier "¿qué se imprime?". -->
-  <section class="slide slide--texto">
+       No repite el "En resumen:" de los engranes: resume el ORDEN, que es lo que resuelve
+       cualquier "¿qué se imprime?". OCULTA para acortar la charla. -->
+  <section class="slide slide--texto oculta">
     <div class="resumen">
       <p class="resumen__titulo">Las 3 reglas del Event Loop</p>
       <ol class="puntos">
