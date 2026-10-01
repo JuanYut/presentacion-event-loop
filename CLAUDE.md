@@ -35,6 +35,7 @@ css/deck.css        Estilos del deck (paleta, tipografía, layout de slide)
 js/deck.js          Motor: navegación, escalado, carga diferida de animaciones
 animaciones/        Las animaciones GSAP, un HTML completo cada una
 shared/
+  temas.css         Los 4 temas de color y el cursor (lo importan deck y animaciones)
   styles.css        Estilos de las animaciones (paleta y componentes)
   controls.js       Escalado del escenario, controles y puente con el deck
 vendor/             GSAP y las fuentes (DM Sans, Inter, JetBrains Mono), en local
@@ -212,11 +213,24 @@ siguiente macrotask.
   corrido quedaba pegado. El eje óptico automático hace lo mismo con los títulos.
 - **Paleta**: amarillo `#FFEA00` sobre tinta `#1E1E1E`. Es la identidad de la
   presentación. Las animaciones van invertidas (fondo oscuro, acento amarillo)
-  para contrastar dentro de la slide amarilla.
-- **Cursor**: una carita feliz amarilla con contorno tinta (SVG en data URI),
-  porque Juan presenta con el mouse. Está repetida en `css/deck.css` y en
-  `shared/styles.css`: cada iframe tiene su propio cursor. Si se cambia, en
-  los dos. **No pasar de 32px**: Chrome no dibuja cursores más grandes
+  para contrastar dentro de la slide amarilla. **Nunca colores fijos**: todo
+  usa `var(--amarillo)`/`var(--tinta)` y, para transparencias,
+  `rgba(var(--amarillo-rgb), 0.25)` (no `color-mix`: las animaciones leen
+  algunos colores con `getComputedStyle` para GSAP y GSAP no lo entiende).
+- **Temas (feature secreto)**: el proyector cambia cómo se ve el amarillo, así
+  que hay 4 temas en `shared/temas.css`: 1 Original (`#FFEA00`/`#1E1E1E`),
+  2 Dorado (`#FFD600`/`#121212`), 3 Ámbar (`#FFC400`/`#000`) y 4 Blanco y
+  negro (`#FFF`/`#000`). Juan los prueba en el proyector antes de la charla
+  con los 4 círculos partidos de arriba a la izquierda, que parecen
+  decoración (sección 5c de `deck.js`, 10 de `deck.css`). Se pone con
+  `data-tema` en `<html>` y se guarda en `localStorage`. Las animaciones lo
+  reciben **en la URL** (`?tema=2`, sección 0 de `controls.js`) y se
+  recargan al cambiarlo: varias leen el acento al armar la timeline, así que
+  cambiarlo después no las repintaría.
+- **Cursor**: una carita feliz con los colores del tema (SVG en data URI),
+  porque Juan presenta con el mouse. Vive en `shared/temas.css`, uno por
+  tema, y lo usan deck y animaciones (cada iframe tiene su propio cursor).
+  **No pasar de 32px**: Chrome no dibuja cursores más grandes
   cuando tocan el borde de un documento, y en el borde de los iframes
   volvía la flecha.
 - **Commits**: en español, una sola línea, simples. **Nunca** líneas de
