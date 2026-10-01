@@ -2,6 +2,7 @@
    shared/controls.js
    Código común para todas las animaciones:
 
+     0. Contexto (dentro del deck o sola) y tema de color
      1. Constantes de duración y easing (DUR, EASE)
      2. Ajuste del escenario 1920x1080 a la ventana
      3. Controles de teclado: configurarControles(tl)
@@ -20,6 +21,14 @@
      · dentro del deck, embebidas en un <iframe> por js/deck.js
    Todo lo que cambia entre ambos modos se decide con esta bandera. */
 const dentroDelDeck = window.parent !== window;
+
+// Tema de color (shared/temas.css). El deck lo pasa en la URL del iframe
+// (?tema=2) y no por postMessage porque tiene que estar puesto ANTES de que
+// la escena arme su timeline: varias leen el acento con getComputedStyle y
+// GSAP se queda con ese color. Por eso al cambiar de tema el deck recarga
+// las animaciones. Sola y sin ?tema, la animación usa el tema 1.
+const temaDeLaUrl = new URLSearchParams(location.search).get('tema');
+if (temaDeLaUrl) document.documentElement.dataset.tema = temaDeLaUrl;
 
 // Referencia a la timeline de la escena, para que el deck pueda pausarla
 // y reiniciarla al entrar y salir de la slide.

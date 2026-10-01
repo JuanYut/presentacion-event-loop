@@ -12,6 +12,7 @@
      4. Teclado, ratón y pantalla completa (clic, clic derecho y rueda)
      5. Mensajes que llegan desde las animaciones
      5b. Barra de control de la animación (debajo del iframe)
+     5c. Temas de color (los círculos de arriba a la izquierda)
      6. Arranque
    ============================================================ */
 
@@ -25,6 +26,7 @@ const btnAnterior = document.querySelector('.flechas__anterior');
 const btnSiguiente = document.querySelector('.flechas__siguiente');
 const barraControl = document.querySelector('.control-animacion');
 const textoPaso = document.querySelector('.control-animacion__paso');
+const selectorTemas = document.querySelector('.temas');
 
 let actual = 0;
 
@@ -46,7 +48,9 @@ function cargarAnimacion(indice) {
   const slide = slides[indice];
   if (!slide) return;
   slide.querySelectorAll('iframe[data-src]').forEach((marco) => {
-    marco.src = marco.dataset.src;
+    // Se guarda la ruta limpia para poder recargarla con otro tema (5c)
+    marco.dataset.ruta = marco.dataset.src;
+    marco.src = conTema(marco.dataset.ruta);
     delete marco.dataset.src;   // marca de "ya cargada"
   });
 }
@@ -220,7 +224,7 @@ function alHacerClic(evento) {
 
 function alHacerClicDerecho(evento) {
   evento.preventDefault();   // sin el menú contextual del navegador
-  if (evento.target.closest('.control-animacion')) return;
+  if (evento.target.closest('.control-animacion, .temas')) return;
   anterior();
 }
 
@@ -290,6 +294,54 @@ function alPulsarBarraControl(evento) {
   if (boton) avisarAnimacion(actual, boton.dataset.accion);
 }
 
+/* ---------- 5c. Temas de color ----------
+   Los 4 círculos de arriba a la izquierda parecen decoración, pero cambian
+   los colores de toda la charla (shared/temas.css). Es por el proyector: el
+   amarillo se ve distinto en cada uno, así que minutos antes de empezar se
+   prueban y se queda el que mejor se vea. El tema elegido se guarda en el
+   navegador para que sobreviva a una recarga. */
+const CLAVE_TEMA = 'presentacion-event-loop:tema';
+let tema = '1';
+
+function leerTemaGuardado() {
+  try {
+    return localStorage.getItem(CLAVE_TEMA) || '1';
+  } catch {
+    return '1';
+  }
+}
+
+// Las animaciones reciben el tema en la URL: lo necesitan antes de armar su
+// timeline (ver la sección 0 de shared/controls.js).
+function conTema(ruta) {
+  return tema === '1' ? ruta : `${ruta}?tema=${tema}`;
+}
+
+function aplicarTema(nuevo) {
+  tema = nuevo;
+  document.documentElement.dataset.tema = tema;
+  try {
+    localStorage.setItem(CLAVE_TEMA, tema);
+  } catch {
+    // Sin almacenamiento el tema dura hasta recargar: no pasa nada
+  }
+  // Las ya cargadas se recargan con el tema nuevo. Al terminar, su evento
+  // load les manda 'activar' o 'desactivar' como la primera vez.
+  document.querySelectorAll('iframe[data-ruta]').forEach((marco) => {
+    marco.src = conTema(marco.dataset.ruta);
+  });
+}
+
+function alPulsarTema(evento) {
+  // Que el clic no llegue a alHacerClic y cambie de slide
+  evento.stopPropagation();
+  const boton = evento.target.closest('button');
+  if (!boton) return;
+  // Sin foco, Espacio sigue avanzando la slide en vez de pulsar el círculo
+  boton.blur();
+  if (boton.dataset.tema !== tema) aplicarTema(boton.dataset.tema);
+}
+
 /* ---------- 6. Arranque ---------- */
 window.addEventListener('resize', escalarLienzo);
 document.addEventListener('keydown', alPulsarTecla);
@@ -304,6 +356,7 @@ window.addEventListener('message', alRecibirMensaje);
 btnAnterior.addEventListener('click', anterior);
 btnSiguiente.addEventListener('click', siguiente);
 barraControl.addEventListener('click', alPulsarBarraControl);
+selectorTemas.addEventListener('click', alPulsarTema);
 
 // Al terminar de cargar un iframe, si su slide es la que está en pantalla,
 // se le manda 'activar' (en ir() todavía no existía su contentWindow listo).
@@ -322,6 +375,10 @@ window.addEventListener('popstate', () => {
   const numero = parseInt(location.hash.slice(1), 10);
   if (!Number.isNaN(numero)) ir(numero - 1, { reemplazarHash: true });
 });
+
+// El tema va antes del primer ir(): ahí se cargan los primeros iframes
+tema = leerTemaGuardado();
+document.documentElement.dataset.tema = tema;
 
 escalarLienzo();
 const inicial = parseInt(location.hash.slice(1), 10);

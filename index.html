@@ -436,6 +436,15 @@ console.<span class="fn">log</span>(<span class="str">"C"</span>);</pre>
   </section>
 
   <!-- ===== Interfaz del deck (fuera del flujo de slides) ===== -->
+  <!-- Selector de tema: parece decoración, pero cada círculo pone su tema
+       de color en toda la charla (ver shared/temas.css y deck.js, 5c). Cada
+       uno se pinta con los colores de su data-tema. -->
+  <nav class="temas" aria-label="Tema de color">
+    <button class="tema" type="button" data-tema="1" aria-label="Tema 1: original"></button>
+    <button class="tema" type="button" data-tema="2" aria-label="Tema 2: dorado"></button>
+    <button class="tema" type="button" data-tema="3" aria-label="Tema 3: ámbar"></button>
+    <button class="tema" type="button" data-tema="4" aria-label="Tema 4: blanco y negro"></button>
+  </nav>
   <div class="barra"><div class="barra__progreso"></div></div>
   <div class="contador">1 / 35</div>
 
